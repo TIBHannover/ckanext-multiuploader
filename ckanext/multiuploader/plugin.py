@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 import ckan.plugins as plugins
 import ckan.plugins.toolkit as toolkit
 from ckanext.multiuploader.controllers import UploadController
