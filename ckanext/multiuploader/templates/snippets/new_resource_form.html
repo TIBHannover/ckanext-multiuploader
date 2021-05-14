@@ -31,7 +31,7 @@
             {{ form.input('url', id='urlText', label=_('URL'), placeholder=_('http://example.com/my-image.jpg'), value=data.name, error=errors.name, classes=['control-full']) }}
             <button  type="button" class="btn btn-primary" id="urlRemove">Remove</button>            
         </div>
-        <input type="file" name="files[]" multiple="multiple" id="fileUpload">
+        <input type="file" name="urls[]" multiple="multiple" id="fileUpload">
     {% endblock %}
     <br><br><br>
     {% block basic_fields_name %}

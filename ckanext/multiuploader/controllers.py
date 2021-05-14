@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-from flask import request, redirect
+from flask import request, redirect, jsonify
 import ckan.lib.helpers as h
 from ckanext.multiuploader.lib import Helper
 
@@ -17,5 +17,5 @@ class UploadController():
             return redirect('/dataset/' + package_name)
         
         else: # Add resource to a draft dataset
-            Helper.add_resource(package_name, request, True)
+            Helper.add_resource(package_name, request, True)            
             return redirect('/dataset/' + package_name)
