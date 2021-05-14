@@ -1,5 +1,6 @@
-import ckan.plugins.toolkit as toolkit
+# encoding: utf-8
 
+import ckan.plugins.toolkit as toolkit
 
 class Helper():
 

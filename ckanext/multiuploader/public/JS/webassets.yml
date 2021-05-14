@@ -1,0 +1,10 @@
+main-js:
+  extra:
+    preload:
+      - vendor/vendor
+      - vendor/bootstrap
+      - vendor/jquery
+      - vendor/jquery.ui.core
+  contents:
+    - multi_uploader.js
+  
