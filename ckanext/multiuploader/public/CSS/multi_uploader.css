@@ -1,0 +1,35 @@
+#fileUpload{
+    display: none;
+}
+.fakebtn,
+.fakebtn:hover,
+.fakebtn:active:focus,
+.fakebtn:focus
+{
+    width: 80px;
+    background-color: white ;
+    color: black ;
+    font-size: 14px ;
+    border-color: gray ;
+
+}
+#dataTitle{
+    color: black;
+    font-size: 15px;
+    font-weight: bold;
+}
+#urlBox{
+    display: none;
+    position: relative;    
+}
+#urlRemove{
+    background-color: red;
+    color: white;
+    position: absolute;
+    top: 27px;
+    right: 3px;
+    z-index: 2;
+    border: 0;
+    border-radius: 100px;
+    padding: 5px 15px;
+}
