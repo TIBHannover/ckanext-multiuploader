@@ -9,8 +9,12 @@ $(document).ready(function(){
             $('#UpBtn').text('Upload');
             $('#UpBtn').removeClass('uploaded');
             $('#fileUpload').val('');
+            $('#fileNameMessage').show();            
             fileList = [];
-            $('#fileNames').empty();            
+            let items = $('.fileItem');
+            for(var i=0; i<items.length;i++){
+                items[i].remove();
+            }          
         }
         else{
             $('#fileUpload').trigger('click');
@@ -25,6 +29,7 @@ $(document).ready(function(){
             fileList.push(files[i]);
         }       
         var filesBox = $('#fileNames');
+        $('#fileNameMessage').hide();
         let elem = "<div class='fileItem' id='ID'>FILE  <i class='fa fa-close'></i></div>";
         for (var i = 0; i < fileList.length; i++)
         {
@@ -59,12 +64,13 @@ $(document).ready(function(){
     $(document).on('click', '.fileItem', function(e){
         if($(e.target).is('i')){
             let idx = parseInt($(this).attr('id')); 
-            fileList.splice(idx, 1);
+            fileList.splice(idx, 1);            
             $(this).remove();
 
         }
         if($('.fileItem').length === 0){
             $('#UpBtn').click();
+            
         }
 
     });

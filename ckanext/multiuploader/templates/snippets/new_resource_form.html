@@ -40,7 +40,11 @@
     {% block basic_fields_name %}
       <div id="fileNameBox" >
         <label for="fileNames">{{_('Files')}}</label>
-        <div class="row" id="fileNames"></div>
+        <div class="row" id="fileNames">
+            <div id="fileNameMessage">
+                {{_('You did not upload any file(s) yet')}}
+            </div>
+        </div>
         <br><br>
       </div>
         
