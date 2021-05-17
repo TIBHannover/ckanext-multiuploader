@@ -45,12 +45,14 @@ $(document).ready(function(){
 
     $('#LinkBtn').click(function(){
         $('#UpBtn').hide();
+        $('#fileNameBox').hide();
         $('#urlBox').show();
         $(this).hide();
     });
     $('#urlRemove').click(function(){
         $('#UpBtn').show();
         $('#LinkBtn').show();
+        $('#fileNameBox').show();
         $('#urlBox').hide();        
     });
 
@@ -73,12 +75,16 @@ $(document).ready(function(){
     });
 
     $('button[name="save"]').click(function(){
+        var sBtn = $(this).val();
         if($(this).val() === "go-dataset"){
             previous("go-dataset"); // previous (dataset metadat page)
             return 0;
         }
-        var isValid = formValidity();
-        var sBtn = $(this).val();
+        if($('#urlBox:visible').length !== 0){ // Link upload (not file)
+            uploadLink(sBtn);
+            return 0;
+        }
+        var isValid = formValidity();        
         var file_counter = 1;        
         for(var i = 0; i < fileList.length; i++){
             if(isValid){
@@ -93,6 +99,7 @@ $(document).ready(function(){
 function uploadFiles(file, action, counter, Max){    
     var formdata = new FormData();
     formdata.set('files', file);
+    formdata.set('isLink', 0);
     formdata.set('pck_id', $('#pck_id').val());
     formdata.set('save', action);
     formdata.set('id', $('#id').val());
@@ -111,9 +118,10 @@ function uploadFiles(file, action, counter, Max){
     return 0;
 }
 
-function uploadLink(){
+function uploadLink(action){
     var formdata = new FormData();
     formdata.set('url', $('#urlText').val());
+    formdata.set('isLink', 1);
     formdata.set('pck_id', $('#pck_id').val());
     formdata.set('save', action);
     formdata.set('id', $('#id').val());

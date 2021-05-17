@@ -29,19 +29,22 @@
         <button  type="button" class="btn btn-primary fakebtn" id="LinkBtn">{{_('Link')}}</button>
         <div id='urlBox'>
             {{ form.input('url', id='urlText', label=_('URL'), placeholder=_('http://example.com/my-image.jpg'), value=data.name, error=errors.name, classes=['control-full']) }}
-            <button  type="button" class="btn btn-primary" id="urlRemove">Remove</button>            
+            <button  type="button" class="btn btn-primary" id="urlRemove">Remove</button>
+            <br><br>
+            {{ form.input('urlName', id='urlName', label=_('Name'), placeholder=_('eg. January 2011 Gold Prices'), value=data.name, error=errors.name, classes=['control-full']) }}
         </div>
         <input type="file" name="urls[]" multiple="multiple" id="fileUpload">
     {% endblock %}
     <br><br><br>
     
     {% block basic_fields_name %}
+      <div id="fileNameBox" >
         <label for="fileNames">{{_('Files')}}</label>
-        <div class="row" id="fileNames">
-
-        </div>
+        <div class="row" id="fileNames"></div>
+        <br><br>
+      </div>
+        
     {% endblock %}
-    <br><br>  
 
     {% block basic_fields_description %}
       {{ form.markdown('description', id='field-description', label=_('Description'), placeholder=_('Some useful notes about the data'), value=data.description, error=errors.description) }}
