@@ -53,12 +53,14 @@ $(document).ready(function(){
         $('#fileNameBox').hide();
         $('#urlBox').show();
         $(this).hide();
+        $('#file-danger').hide();
     });
     $('#urlRemove').click(function(){
         $('#UpBtn').show();
         $('#LinkBtn').show();
         $('#fileNameBox').show();
-        $('#urlBox').hide();        
+        $('#urlBox').hide();
+        $('#file-danger').hide();        
     });
 
     $(document).on('click', '.fileItem', function(e){
@@ -80,24 +82,30 @@ $(document).ready(function(){
         return false;
     });
 
-    $('button[name="save"]').click(function(){
+    $('button[name="Csave"]').click(function(){        
         var sBtn = $(this).val();
         if($(this).val() === "go-dataset"){
             previous("go-dataset"); // previous (dataset metadat page)
             return 0;
-        }
-        if($('#urlBox:visible').length !== 0){ // Link upload (not file)
+        }            
+        if($('#urlBox:visible').length !== 0 && LinkValidity()){ // Link upload (not file)
             uploadLink(sBtn);
             return 0;
+        }            
+        var file_counter = 1;         
+        if(fileValidity()){            
+            for(var i = 0; i < fileList.length; i++){            
+                uploadFiles(fileList[i], sBtn, file_counter, fileList.length);
+                file_counter ++;             
+            }     
         }
-        var isValid = formValidity();        
-        var file_counter = 1;        
-        for(var i = 0; i < fileList.length; i++){
-            if(isValid){
-               uploadFiles(fileList[i], sBtn, file_counter, fileList.length);
-               file_counter ++;
-            }
-        }                 
+        else{ // no file is selected            
+            $('#file-danger').show();
+            setTimeout(function(){
+                $('#file-danger').hide();
+            }, 10000);
+        }
+                    
     });
     
 });
@@ -130,6 +138,7 @@ function uploadLink(action){
     formdata.set('isLink', 1);
     formdata.set('pck_id', $('#pck_id').val());
     formdata.set('save', action);
+    formdata.set('name', $('#urlName').val());
     formdata.set('id', $('#id').val());
     formdata.set('description', $('#field-description').val());
     var req = new XMLHttpRequest();
@@ -158,8 +167,15 @@ function previous(action){
     return 0;
 }
 
-function formValidity(){
-    if($("#fileUpload")[0].files){
+function fileValidity(){
+    if(fileList.length !==0){
+        return true;
+    }
+    return false
+}
+
+function LinkValidity(){
+    if($('#urlText').val() !== ''){
         return true;
     }
     return false

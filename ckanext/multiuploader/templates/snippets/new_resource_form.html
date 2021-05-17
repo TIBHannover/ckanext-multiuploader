@@ -24,6 +24,9 @@
 
   {% block basic_fields %}
     {% block basic_fields_url %}
+        <div class="alert alert-danger" id="file-danger">
+            {{_('You need to upload file(s) or add a Link ' )}}
+        </div>
         <div id="dataTitle">{{_('Data')}}:</div><br>
         <button  type="button" class="btn btn-primary fakebtn" id="UpBtn">{{_('Upload')}}</button>
         <button  type="button" class="btn btn-primary fakebtn" id="LinkBtn">{{_('Link')}}</button>
@@ -82,17 +85,17 @@
     {% endblock %}
     {% if stage %}
       {% block previous_button %}
-        <button class="btn btn-default" name="save" value="go-dataset" type="submit">{{ _('Previous') }}</button>
+        <button class="btn btn-default" name="Csave" value="go-dataset" type="submit">{{ _('Previous') }}</button>
       {% endblock %}
     {% endif %}
    
     {% if stage %}
       {% block save_button %}
-        <button class="btn btn-primary" name="save" value="go-metadata" type="submit">{% block save_button_text %}{{ _('Finish') }}{% endblock %}</button>
+        <button class="btn btn-primary" name="Csave" value="go-metadata" type="submit">{% block save_button_text %}{{ _('Finish') }}{% endblock %}</button>
       {% endblock %}
     {% else %}
       {% block add_button %}
-        <button class="btn btn-primary" name="save" value="go-dataset-complete" type="submit">{{ _('Add') }}</button>
+        <button class="btn btn-primary" name="Csave" value="go-dataset-complete" type="submit">{{ _('Add') }}</button>
       {% endblock %}
     {% endif %}
   </div>

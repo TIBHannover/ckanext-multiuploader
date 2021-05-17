@@ -14,7 +14,7 @@ class Helper():
                 'package_id' : package['id'],
                 'url': request.form['url'],
                 'description': description,
-                'name': request.form['url'],
+                'name': request.form['name'],
                 'url_type': '',                
             }
             resource = toolkit.get_action('resource_create')(context, resource_data)
