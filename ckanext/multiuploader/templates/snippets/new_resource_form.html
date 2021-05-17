@@ -36,9 +36,12 @@
     <br><br><br>
     
     {% block basic_fields_name %}
-      {{ form.input('name', id='field-name', label=_('Resource Name'), placeholder=_('eg. January 2011 Gold Prices'), value=data.name, error=errors.name, classes=['control-full']) }}
-    {% endblock %}
+        <label for="fileNames">{{_('Files')}}</label>
+        <div class="row" id="fileNames">
 
+        </div>
+    {% endblock %}
+    <br><br>  
 
     {% block basic_fields_description %}
       {{ form.markdown('description', id='field-description', label=_('Description'), placeholder=_('Some useful notes about the data'), value=data.description, error=errors.description) }}
