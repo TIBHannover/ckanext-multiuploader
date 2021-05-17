@@ -74,20 +74,19 @@ $(document).ready(function(){
 
     $('button[name="save"]').click(function(){
         var isValid = formValidity();
-        var sBtn = $(this).val();        
+        var sBtn = $(this).val();
+        var file_counter = 1;        
         for(var i = 0; i < fileList.length; i++){
             if(isValid){
-                uploadFiles(fileList[i], sBtn);
+               redirect_url = uploadFiles(fileList[i], sBtn, file_counter, fileList.length);
+               file_counter ++;
             }
-        }
-        
-        
-       
+        }                 
     });
     
 });
 
-function uploadFiles(file, action){    
+function uploadFiles(file, action, counter, Max){    
     var formdata = new FormData();
     formdata.set('files', file);
     formdata.set('pck_id', $('#pck_id').val());
@@ -95,8 +94,17 @@ function uploadFiles(file, action){
     formdata.set('id', $('#id').val());
     formdata.set('description', $('#field-description').val());
     var req = new XMLHttpRequest();
+    req.onreadystatechange = function() {
+        if (req.readyState == XMLHttpRequest.DONE && req.status === 200) {       
+            if (counter === Max){
+                window.location.replace(this.responseText);  
+            }                   
+            
+        }
+    }
     req.open("POST", "/multiuploader/upload_resources")
     req.send(formdata)
+    return 0;
 }
 
 function formValidity(){
