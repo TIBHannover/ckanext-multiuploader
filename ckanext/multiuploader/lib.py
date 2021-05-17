@@ -7,7 +7,6 @@ class Helper():
     def add_resource(package_name, request, active):
         package = toolkit.get_action('package_show')({}, {'name_or_id': package_name})
         description = request.form['description']
-        name = request.form['name']
         context = {}
         for resource in request.files.getlist('urls[]'):
             resource_data = {}

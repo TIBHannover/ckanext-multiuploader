@@ -24,9 +24,9 @@
 
   {% block basic_fields %}
     {% block basic_fields_url %}
-        <div id="dataTitle">Data:</div><br>
-        <button  type="button" class="btn btn-primary fakebtn" id="UpBtn">Upload</button>
-        <button  type="button" class="btn btn-primary fakebtn" id="LinkBtn">Link</button>
+        <div id="dataTitle">{{_('Data')}}:</div><br>
+        <button  type="button" class="btn btn-primary fakebtn" id="UpBtn">{{_('Upload')}}</button>
+        <button  type="button" class="btn btn-primary fakebtn" id="LinkBtn">{{_('Link')}}</button>
         <div id='urlBox'>
             {{ form.input('url', id='urlText', label=_('URL'), placeholder=_('http://example.com/my-image.jpg'), value=data.name, error=errors.name, classes=['control-full']) }}
             <button  type="button" class="btn btn-primary" id="urlRemove">Remove</button>            
@@ -34,6 +34,7 @@
         <input type="file" name="urls[]" multiple="multiple" id="fileUpload">
     {% endblock %}
     <br><br><br>
+    
     {% block basic_fields_name %}
       {{ form.input('name', id='field-name', label=_('Resource Name'), placeholder=_('eg. January 2011 Gold Prices'), value=data.name, error=errors.name, classes=['control-full']) }}
     {% endblock %}
