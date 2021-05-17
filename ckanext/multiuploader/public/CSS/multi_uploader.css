@@ -41,12 +41,13 @@
     height: 100px;
     margin-left: 2px;
     padding: 5px;
+    overflow-y: auto;
 }
 .fileItem{
     background-color: #EBEBEB;
     display: inline-block;
     clear:both;
     float:left;
-    padding: 2px;
+    padding: 5px;
     margin-bottom: 10px;
 }

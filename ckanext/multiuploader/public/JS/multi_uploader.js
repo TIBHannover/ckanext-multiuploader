@@ -73,12 +73,16 @@ $(document).ready(function(){
     });
 
     $('button[name="save"]').click(function(){
+        if($(this).val() === "go-dataset"){
+            previous("go-dataset"); // previous (dataset metadat page)
+            return 0;
+        }
         var isValid = formValidity();
         var sBtn = $(this).val();
         var file_counter = 1;        
         for(var i = 0; i < fileList.length; i++){
             if(isValid){
-               redirect_url = uploadFiles(fileList[i], sBtn, file_counter, fileList.length);
+               uploadFiles(fileList[i], sBtn, file_counter, fileList.length);
                file_counter ++;
             }
         }                 
@@ -100,6 +104,39 @@ function uploadFiles(file, action, counter, Max){
                 window.location.replace(this.responseText);  
             }                   
             
+        }
+    }
+    req.open("POST", "/multiuploader/upload_resources")
+    req.send(formdata)
+    return 0;
+}
+
+function uploadLink(){
+    var formdata = new FormData();
+    formdata.set('url', $('#urlText').val());
+    formdata.set('pck_id', $('#pck_id').val());
+    formdata.set('save', action);
+    formdata.set('id', $('#id').val());
+    formdata.set('description', $('#field-description').val());
+    var req = new XMLHttpRequest();
+    req.onreadystatechange = function() {
+        if (req.readyState == XMLHttpRequest.DONE && req.status === 200) {       
+            window.location.replace(this.responseText);                                 
+        }
+    }
+    req.open("POST", "/multiuploader/upload_resources")
+    req.send(formdata)
+    return 0;
+}
+
+function previous(action){
+    var formdata = new FormData();
+    formdata.set('save', action);
+    formdata.set('pck_id', $('#pck_id').val());
+    var req = new XMLHttpRequest();
+    req.onreadystatechange = function() {
+        if (req.readyState == XMLHttpRequest.DONE && req.status === 200) {       
+            window.location.replace(this.responseText);                                 
         }
     }
     req.open("POST", "/multiuploader/upload_resources")
