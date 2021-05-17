@@ -8,7 +8,7 @@ class Helper():
         package = toolkit.get_action('package_show')({}, {'name_or_id': package_name})
         description = request.form['description']
         context = {}
-        for resource in request.files.getlist('urls[]'):
+        for resource in request.files.getlist('files'):
             resource_data = {}
             resource_data = {
                 'package_id' : package['id'],

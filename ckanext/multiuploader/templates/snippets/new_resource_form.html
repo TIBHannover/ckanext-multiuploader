@@ -19,8 +19,8 @@
 
   {% block errors %}{{ form.errors(error_summary) }}{% endblock %}
 
-  <input name="id" value="{{ data.id }}" type="hidden"/>
-  <input name="pck_id" value="{{ pkg_name }}" type="hidden"/>
+  <input id="id" value="{{ data.id }}" type="hidden"/>
+  <input id="pck_id" value="{{ pkg_name }}" type="hidden"/>
 
   {% block basic_fields %}
     {% block basic_fields_url %}

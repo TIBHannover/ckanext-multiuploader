@@ -19,10 +19,11 @@ $(document).ready(function(){
 
     $("#fileUpload").change(function(){
         var files = $("#fileUpload")[0].files;
+        var obj = {};
         for (var i = 0; i < files.length; i++)
         {
-            fileList.push(files[i]);            
-        }        
+            fileList.push(files[i]);
+        }       
         var filesBox = $('#fileNames');
         let elem = "<div class='fileItem' id='ID'>FILE  <i class='fa fa-close'></i></div>";
         for (var i = 0; i < fileList.length; i++)
@@ -67,23 +68,36 @@ $(document).ready(function(){
     });
 
     $("#resource-edit").bind('submit', function (e) {
-        var isValid = formValidity();
-        if (isValid) {
-            jQuery.ajax({
-                type: "POST",
-                url: "/multiuploader/upload_resources",
-                dataType: "html",
-                data: {'description': $('#field-description').val(), 'files':fileList},
-                success: function (result) {
-                    console.log(result);
-                }
-            });
-        }
         e.preventDefault();
         return false;
     });
 
+    $('button[name="save"]').click(function(){
+        var isValid = formValidity();
+        var sBtn = $(this).val();        
+        for(var i = 0; i < fileList.length; i++){
+            if(isValid){
+                uploadFiles(fileList[i], sBtn);
+            }
+        }
+        
+        
+       
+    });
+    
 });
+
+function uploadFiles(file, action){    
+    var formdata = new FormData();
+    formdata.set('files', file);
+    formdata.set('pck_id', $('#pck_id').val());
+    formdata.set('save', action);
+    formdata.set('id', $('#id').val());
+    formdata.set('description', $('#field-description').val());
+    var req = new XMLHttpRequest();
+    req.open("POST", "/multiuploader/upload_resources")
+    req.send(formdata)
+}
 
 function formValidity(){
     if($("#fileUpload")[0].files){
