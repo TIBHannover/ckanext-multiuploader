@@ -1,3 +1,9 @@
+my-css:
+  output: ckanext-multiuploader/%(version)s_my.css
+  contents:
+    - multi_uploader.css
+
+
 my-js:  
   output: ckanext-multiuploader/%(version)s_my.js
   extra:

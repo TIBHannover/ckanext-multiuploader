@@ -16,7 +16,7 @@ class MultiuploaderPlugin(plugins.SingletonPlugin):
         toolkit.add_template_directory(config_, 'templates')
         toolkit.add_public_directory(config_, 'public')
         toolkit.add_resource('fanstatic', 'multiuploader')
-        toolkit.add_resource('public/JS', 'ckanext-multiuploader')
+        toolkit.add_resource('public/statics', 'ckanext-multiuploader')
         
 
     #plugin Blueprint
