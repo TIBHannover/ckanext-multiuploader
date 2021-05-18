@@ -1,4 +1,4 @@
-main-js:
+my-js:
   extra:
     preload:
       - vendor/vendor
