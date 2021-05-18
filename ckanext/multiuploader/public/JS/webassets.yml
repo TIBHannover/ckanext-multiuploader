@@ -1,8 +1,8 @@
-my-js:
-  filters: rjsmin
+my-js:  
   output: ckanext-multiuploader/%(version)s_my.js
   extra:
     preload:
+      - base/main
       - vendor/vendor
       - vendor/bootstrap
       - vendor/jquery
