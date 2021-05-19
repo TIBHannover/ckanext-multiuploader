@@ -7,6 +7,7 @@
 {% set data = data or {} %}
 {% set errors = errors or {} %}
 {% set action = h.url_for('multiuploader.upload_resources', _external=True) %}
+<input type="hidden" value="{{action}}" id="dest_url" >
 
 <form id="resource-edit" class="dataset-form dataset-resource-form" method="post" action="" data-module="basic-form resource-form" enctype="multipart/form-data">
 

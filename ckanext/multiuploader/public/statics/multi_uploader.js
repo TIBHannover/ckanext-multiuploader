@@ -1,5 +1,5 @@
 var fileList = [];
-var des_url = "/multiuploader/upload_resources";
+var dest_url = $('#dest_url').val();
 $(document).ready(function(){
     $('#UpBtn').on('click', function() {    
         if ($('#UpBtn').hasClass('uploaded')){ // Remove all files
@@ -128,7 +128,7 @@ function uploadFiles(file, action, counter, Max){
             
         }
     }
-    req.open("POST", "/multiuploader/upload_resources")
+    req.open("POST", dest_url)
     req.send(formdata)
     return 0;
 }
@@ -148,7 +148,7 @@ function uploadLink(action){
             window.location.replace(this.responseText);                                 
         }
     }
-    req.open("POST", "/multiuploader/upload_resources")
+    req.open("POST", dest_url)
     req.send(formdata)
     return 0;
 }
@@ -163,7 +163,7 @@ function previous(action){
             window.location.replace(this.responseText);                                 
         }
     }
-    req.open("POST", "/multiuploader/upload_resources")
+    req.open("POST", dest_url)
     req.send(formdata)
     return 0;
 }
