@@ -6,9 +6,9 @@
 
 {% set data = data or {} %}
 {% set errors = errors or {} %}
-{% set action = '/multiuploader/upload_resources' %}
+{% set action = {{h.url_for('multiuploader', 'upload_resources')}} %}
 
-<form id="resource-edit" class="dataset-form dataset-resource-form" method="post" action="{{ action }}" data-module="basic-form resource-form" enctype="multipart/form-data">
+<form id="resource-edit" class="dataset-form dataset-resource-form" method="post" action="{{action}}" data-module="basic-form resource-form" enctype="multipart/form-data">
 
   {% block stages %}
     {# An empty stages variable will not show the stages #}

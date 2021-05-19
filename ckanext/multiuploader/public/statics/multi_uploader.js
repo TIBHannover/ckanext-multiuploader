@@ -1,4 +1,5 @@
 var fileList = [];
+var des_url = "/multiuploader/upload_resources";
 $(document).ready(function(){
     $('#UpBtn').on('click', function() {    
         if ($('#UpBtn').hasClass('uploaded')){ // Remove all files
