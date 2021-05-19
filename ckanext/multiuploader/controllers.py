@@ -11,13 +11,13 @@ class UploadController():
         if request.method == "POST":                
             package_name = request.form['pck_id']
             action = request.form['save']
-            if action == "go-dataset":  # Previous button: go back to the dataset metadat 
-                return base_url + '/dataset/edit/' + str(package_name)
+            if action == "go-dataset":  # Previous button: go back to the dataset metadat                 
+                return h.url_for('dataset.edit', id=str(package_name) ,  _external=True)
 
             elif action == "go-dataset-complete": # Add resource to an active dataset
-                Helper.add_resource(package_name, request, False, int(request.form['isLink']))
-                return base_url + '/dataset/' + package_name
+                Helper.add_resource(package_name, request, False, int(request.form['isLink']))                
+                return h.url_for('dataset.read', id=str(package_name) ,  _external=True)
             
             else: # Add resource to a draft dataset
-                Helper.add_resource(package_name, request, True, int(request.form['isLink']))            
-                return base_url + '/dataset/' + package_name
+                Helper.add_resource(package_name, request, True, int(request.form['isLink']))                            
+                return h.url_for('dataset.read', id=str(package_name) ,  _external=True)
