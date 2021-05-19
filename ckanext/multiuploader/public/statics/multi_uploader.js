@@ -1,5 +1,6 @@
 var fileList = [];
 var dest_url = $('#dest_url').val();
+var test_test = "";
 $(document).ready(function(){
     $('#UpBtn').on('click', function() {    
         if ($('#UpBtn').hasClass('uploaded')){ // Remove all files
