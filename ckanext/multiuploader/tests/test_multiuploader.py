@@ -37,10 +37,9 @@ class TestUpload(object):
         }
         url = h.url_for('multiuploader.upload_resources')        
         headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'}
-        headers={'content_type':'multipart/form-data'}
-        with pytest.raises(logic.NotAuthorized) as e:
-            app.post(url, data=data, headers=headers)
+        headers={'content_type':'multipart/form-data'}  
+        response = app.post(url, data=data, headers=headers)   
 
-        assert e.value.message == "Action resource_create requires an authenticated user"
+        assert response.status_code == 403
         
         
