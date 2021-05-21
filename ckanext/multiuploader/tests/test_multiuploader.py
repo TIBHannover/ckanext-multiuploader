@@ -2,20 +2,38 @@
 '''Tests for the ckanext.multiuploader extension.
 
 '''
-from requests.models import Response
-from werkzeug.datastructures import Headers
 import pytest
 
-import ckan.logic as logic
 import ckan.tests.factories as factories
-import ckan.tests.helpers as helpers
 import ckan.lib.helpers as h
-from ckan.plugins.toolkit import NotAuthorized, ObjectNotFound
-import json, requests, io
+import ckan.model as model
+import ckan.lib.create_test_data as ctd
+#from pathlib import Path
+#import base64
+#import json
+
 
 
 @pytest.mark.usefixtures('clean_db', 'with_plugins', 'with_request_context')
 class TestUpload(object):
+    sysadmin_user  = None
+    resource_data = {}
+    upload_url = None
+
+    @pytest.fixture(autouse=True)
+    def intial(self, clean_db, clean_index):
+        ctd.CreateTestData.create()
+        self.sysadmin_user = model.User.get("testsysadmin")   
+        self.resource_data = {
+            'isLink': 0,            
+            'save': 'go-metadata',
+            'id': '',
+            'description': 'Test Test',
+        }
+        self.upload_url = h.url_for('multiuploader.upload_resources')  
+
+
+
     def test_resource_upload_guest_user(self, app):
         '''A guest user should not be abled to
             call the backend and upload resource
@@ -26,20 +44,29 @@ class TestUpload(object):
             'capacity': 'member'
         }])
         dataset = factories.Dataset(owner_org=owner_org['id'])       
-
-        data = {
-            'isLink': 0,
-            'pck_id': dataset['id'],
-            'save': 'go-metadata',
-            'id': '',
-            'description': 'Test Test',
-            'files':(io.BytesIO(b"abcdef"), 'test.jpg')
-        }
-        url = h.url_for('multiuploader.upload_resources')        
-        headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'}
-        headers={'content_type':'multipart/form-data'}  
-        response = app.post(url, data=data, headers=headers)   
-
+        self.resource_data['pck_id'] = dataset['id']                
+        response = app.post(self.upload_url, data=self.resource_data)   
         assert response.status_code == 403
+        assert "You need to authenticate before accessing this function" in response.body
+
+    
+    def test_resource_upload_admin(self, app):
+        '''An admin should be abled to
+            call the backend and upload resource
+        '''
+               
+        owner_org = factories.Organization(users=[{
+            'name': self.sysadmin_user.id,
+            'capacity': 'member'
+        }])
+        dataset = factories.Dataset(owner_org=owner_org['id'])       
+        #with open(Path(__file__).resolve().parent / 'resources' / 'test.jpg', 'rb') as test:
+         #   img = test.read()
+        self.resource_data['pck_id'] = dataset['id']                             
+        auth = {u"Authorization": str(self.sysadmin_user.apikey)}
+        response = app.post(self.upload_url, data=self.resource_data , extra_environ=auth)           
+        assert response.status_code == 200
+        assert "/dataset/" in response.body
+        
         
         
