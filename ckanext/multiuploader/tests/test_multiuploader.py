@@ -67,6 +67,22 @@ class TestUpload(object):
         response = app.post(self.upload_url, data=self.resource_data , extra_environ=auth)           
         assert response.status_code == 200
         assert "/dataset/" in response.body
+    
+    
+    def test_resource_upload_validation(self, app):
+        '''A resource upload request must 
+            have the needed data. This test does not pass
+            package id
+        '''
+               
+        owner_org = factories.Organization(users=[{
+            'name': self.sysadmin_user.id,
+            'capacity': 'member'
+        }])                                         
+        auth = {u"Authorization": str(self.sysadmin_user.apikey)}
+        response = app.post(self.upload_url, data=self.resource_data , extra_environ=auth)           
+        assert response.status_code == 400
+        assert "missing data" in response.body
         
         
         
