@@ -42,16 +42,19 @@
     <br><br><br>
     
     {% block basic_fields_name %}
-      <div id="fileNameBox" >
+   
+      <div id="fileNameBox">
         <label for="fileNames">{{_('Files')}}</label>
         <div class="row" id="fileNames">
             <div id="fileNameMessage">
-                {{_('You did not upload any file(s) yet')}}
+                <i class="fa fa-arrows-alt"></i>
+                {{_('Drop file(s) here or use the Upload button')}}
             </div>
         </div>
         <br><br>
       </div>
-        
+    
+              
     {% endblock %}
 
     {% block basic_fields_description %}

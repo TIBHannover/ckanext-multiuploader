@@ -15,4 +15,5 @@ my-js:
       - vendor/jquery.ui.core
   contents:
     - multi_uploader.js
+    - drag_drop.js
   
