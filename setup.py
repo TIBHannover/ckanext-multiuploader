@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Always prefer setuptools over distutils
+
 from setuptools import setup, find_packages
 from codecs import open  # To use a consistent encoding
 from os import path
@@ -12,18 +12,13 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='''ckanext-multiuploader''',
-
-    # Versions should comply with PEP440.  For a discussion on single-sourcing
-    # the version across setup.py and the project code, see
-    # http://packaging.python.org/en/latest/tutorial.html#version
-    version='0.0.1',
-
+    version='1.0.1',
     description='''''',
     long_description=long_description,
     long_description_content_type="text/markdown",
 
     # The project's main homepage.
-    url='https://github.com//ckanext-multiuploader',
+    #url='https://github.com//ckanext-multiuploader',
 
     # Author details
     author='''Pooya''',

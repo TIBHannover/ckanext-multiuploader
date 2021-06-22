@@ -20,7 +20,13 @@ class UploadController():
                     return h.url_for('dataset.read', id=str(package_name) ,  _external=True)
                 
                 else: # Add resource to a draft dataset
-                    Helper.add_resource(package_name, request, True, int(request.form['isLink']))                            
+                    Helper.add_resource(package_name, request, True, int(request.form['isLink']))
+                    if Helper.check_plugin_enabled("group_ownership"): # if group_ownership plugin exists:
+                        return h.url_for('group_ownership.add_ownership_view', id=str(package_name) ,  _external=True)
+
+                    elif Helper.check_plugin_enabled("media_wiki"): # if media_wiki plugin exists
+                        return h.url_for('media_wiki.machines_view', id=str(package_name) ,  _external=True)
+
                     return h.url_for('dataset.read', id=str(package_name) ,  _external=True)
             except:
                 return toolkit.abort(400, "missing data")

@@ -13,10 +13,7 @@ $(document).ready(function(){
             $('#fileUpload').val('');
             $('#fileNameMessage').show();            
             fileList = [];
-            let items = $('.fileItem');
-            for(var i=0; i<items.length;i++){
-                items[i].remove();
-            }          
+            emptyFiles();       
         }
         else{
             $('#fileUpload').trigger('click');
@@ -26,6 +23,7 @@ $(document).ready(function(){
     $("#fileUpload").change(function(){
         var files = $("#fileUpload")[0].files;
         var obj = {};
+        emptyFiles();  
         for (var i = 0; i < files.length; i++)
         {
             fileList.push(files[i]);
@@ -181,4 +179,11 @@ function LinkValidity(){
         return true;
     }
     return false
+}
+
+function emptyFiles(){
+    let items = $('.fileItem');
+        for(var i=0; i<items.length;i++){
+            items[i].remove();
+    }   
 }

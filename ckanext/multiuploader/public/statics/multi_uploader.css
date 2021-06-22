@@ -38,7 +38,7 @@
     border: #EBEBEB 2px solid;
     border-radius: 3px;
     width: 100%;
-    height: 100px;
+    height: 200px;
     margin-left: 2px;
     padding: 5px;
     overflow-y: auto;
@@ -58,9 +58,14 @@
     top:50%;
     font-style: italic;
     color: #9A9A9A;
-    width: 30%;
+    width: 40%;
     transform: translate(-50%,-50%);
 }
 #file-danger{
     display: none;
+}
+
+.drag_over {
+    border: 3px black dashed !important;
+    background-color: #ccdcff;
 }
