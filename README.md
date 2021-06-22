@@ -38,20 +38,9 @@ To install ckanext-multiuploader:
         sudo service apache2 reload
 
 
-## Developer installation
-
-To install ckanext-multiuploader for development, activate your CKAN virtualenv and
-do:
-
-    git clone https://github.com//ckanext-multiuploader.git
-    cd ckanext-multiuploader
-    python setup.py develop
-    pip install -r dev-requirements.txt
-
 
 ## Tests
 
 To run the tests, do:
 
-    pytest --ckan-ini=test.ini
-
+    pytest --ckan-ini=test.ini  --disable-pytest-warnings  ckanext/multiuploader/tests/
