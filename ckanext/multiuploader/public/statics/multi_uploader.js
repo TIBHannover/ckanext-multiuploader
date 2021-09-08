@@ -93,11 +93,13 @@ $(document).ready(function(){
             return 0;
         }            
         var file_counter = 1;         
-        if(fileValidity()){            
+        if(fileValidity()){ 
+            $('.progress').show();           
             for(var i = 0; i < fileList.length; i++){            
                 uploadFiles(fileList[i], sBtn, file_counter, fileList.length);
-                file_counter ++;             
-            }     
+                file_counter ++;          
+            }
+            
         }
         else{ // no file is selected            
             $('#file-danger').show();
@@ -109,6 +111,7 @@ $(document).ready(function(){
     });
     
 });
+
 
 function uploadFiles(file, action, counter, Max){    
     var formdata = new FormData();
@@ -122,7 +125,7 @@ function uploadFiles(file, action, counter, Max){
     req.onreadystatechange = function() {
         if (req.readyState == XMLHttpRequest.DONE && req.status === 200) {       
             if (counter === Max){
-                window.location.replace(this.responseText);  
+                 window.location.replace(this.responseText);  
             }                   
             
         }
