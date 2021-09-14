@@ -70,8 +70,8 @@
     background-color: #ccdcff;
 }
 
-.progress{
-    display: none;
+#progress-modal {
+    top: 25%;
 }
 
 .progress > div {

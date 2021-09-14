@@ -94,22 +94,23 @@ $(document).ready(function(){
         }            
         var file_counter = 1;         
         if(fileValidity()){ 
-            $('.progress').show();           
+            $('#progress-modal').modal({
+                backdrop: 'static',
+                keyboard: false,
+                show: true 
+            });           
             for(var i = 0; i < fileList.length; i++){            
                 uploadFiles(fileList[i], sBtn, file_counter, fileList.length);
                 file_counter ++;          
-            }
-            
+            } 
         }
         else{ // no file is selected            
             $('#file-danger').show();
             setTimeout(function(){
                 $('#file-danger').hide();
             }, 10000);
-        }
-                    
-    });
-    
+        }             
+    });   
 });
 
 
