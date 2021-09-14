@@ -22,18 +22,13 @@
 
   <input id="id" value="{{ data.id }}" type="hidden"/>
   <input id="pck_id" value="{{ pkg_name }}" type="hidden"/>
+  {% snippet 'snippets/progress_bar_modal.html' %}
 
   {% block basic_fields %}
     {% block basic_fields_url %}
         <div class="alert alert-danger" id="file-danger">
             {{_('You need to upload file(s) or add a Link ' )}}
         </div>
-        <div class="progress">
-           <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="100" aria-valuemin="50" aria-valuemax="100">
-              {{_('Uploading ...')}}
-           </div>
-        </div>
-        
         <div id="dataTitle">{{_('Data')}}:</div><br>
         <button  type="button" class="btn btn-primary fakebtn" id="UpBtn">{{_('Upload')}}</button>
         <button  type="button" class="btn btn-primary fakebtn" id="LinkBtn">{{_('Link')}}</button>
