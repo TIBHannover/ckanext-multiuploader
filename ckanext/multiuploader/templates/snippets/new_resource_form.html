@@ -41,9 +41,13 @@
         <input type="file" name="urls[]" multiple="multiple" id="fileUpload">
     {% endblock %}
     <br><br><br>
-    
+    <div class="alert alert-warning">
+        <p>
+          {{_('Note: Each file has to be less than 2G')}}
+        </p>
+      </div>
     {% block basic_fields_name %}
-   
+      
       <div id="fileNameBox">
         <label for="fileNames">{{_('Files')}}</label>
         <div class="row" id="fileNames">

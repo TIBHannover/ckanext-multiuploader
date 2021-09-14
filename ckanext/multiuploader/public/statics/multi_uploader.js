@@ -102,18 +102,15 @@ $(document).ready(function(){
             for(var i = 0; i < fileList.length; i++){            
                 uploadFiles(fileList[i], sBtn, file_counter, fileList.length);
                 file_counter ++;          
-            }
-            
+            } 
         }
         else{ // no file is selected            
             $('#file-danger').show();
             setTimeout(function(){
                 $('#file-danger').hide();
             }, 10000);
-        }
-                    
-    });
-    
+        }             
+    });   
 });
 
 
