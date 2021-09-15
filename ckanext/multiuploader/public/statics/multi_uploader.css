@@ -88,4 +88,8 @@
       width: 100%;
       color: black;
 }
+
+#upload-progress-bar{
+    width: 1%;
+}
   
