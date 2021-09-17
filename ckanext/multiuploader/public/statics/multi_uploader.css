@@ -61,7 +61,7 @@
     width: 40%;
     transform: translate(-50%,-50%);
 }
-#file-danger{
+#file-danger, #file-danger-size{
     display: none;
 }
 
@@ -92,4 +92,18 @@
 #upload-progress-bar{
     width: 1%;
 }
-  
+
+.size-alert{
+    background-color: red;
+    color: white;
+    display: inline-block;
+    border-radius: 15px;
+    width: 100px;
+    text-align: center;
+    height: 20px;
+    margin-left: 5px;
+}
+
+.size-alert-span{
+    display: none;
+}
