@@ -107,3 +107,19 @@
 .size-alert-span{
     display: none;
 }
+
+#upload-error-container{
+    text-align: center;
+    display: none;
+}
+
+#upload-error-container > p{
+    font-size: 20px;
+}
+
+#upload-progress-modal-close{
+    display: none;
+    background-color: red;
+    color: white;
+}
+

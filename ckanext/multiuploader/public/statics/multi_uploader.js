@@ -133,6 +133,13 @@ $(document).ready(function(){
             }
         }             
     });   
+
+    $('#upload-progress-modal-close').click(function(){
+        location.reload();
+        return false;
+    });
+
+
 });
 
 /**
@@ -143,6 +150,8 @@ function updateProgressBar(percent){
     $('#upload-progress-bar').css('width', percent + '%');
     $('#upload-progress-bar').html(percent + '%');
 }
+
+
 
 /**
  * check the files size to be less than upload limit
@@ -186,6 +195,11 @@ function uploadFiles(file, action, counter, Max){
                  window.location.replace(this.responseText);
             }                   
             
+        }
+        else if (req.readyState == XMLHttpRequest.DONE && req.status !== 200){
+            $('#progress-bar-container').hide();
+            $('#upload-error-container').show();
+            $('#upload-progress-modal-close').show();
         }
     }
     req.open("POST", dest_url)
