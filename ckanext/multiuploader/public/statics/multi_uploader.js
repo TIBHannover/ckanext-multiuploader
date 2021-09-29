@@ -9,6 +9,7 @@ var dest_url = $('#dest_url').val();
 var test_test = "";
 var uploadPercent = 0;
 var forbiddenLimit = false;
+var already_uploaded_count = 0;
 $(document).ready(function(){
     $('#UpBtn').on('click', function() {     // click the upload/remove button
         if ($('#UpBtn').hasClass('uploaded')){ // Remove all files (file are already added to the file box)
@@ -115,7 +116,7 @@ $(document).ready(function(){
                 show: true 
             });           
             for(var i = 0; i < fileList.length; i++){            
-                uploadFiles(fileList[i], sBtn, file_counter, fileList.length); // upload a file
+                uploadFiles(fileList[i], sBtn, fileList.length); // upload a file
                 file_counter ++;          
             } 
         }
@@ -172,7 +173,7 @@ function checkFileSizes(){
  * Upload a file to server
  * 
  */
-function uploadFiles(file, action, counter, Max){    
+function uploadFiles(file, action, Max){    
     var formdata = new FormData();
     formdata.set('files', file);
     formdata.set('isLink', 0);
@@ -189,8 +190,9 @@ function uploadFiles(file, action, counter, Max){
         oldProgress = progress
     }, false);
     req.onreadystatechange = function() {
-        if (req.readyState == XMLHttpRequest.DONE && req.status === 200) {       
-            if (counter === Max){
+        if (req.readyState == XMLHttpRequest.DONE && req.status === 200) {      
+            already_uploaded_count += 1; 
+            if (already_uploaded_count === Max){
                 updateProgressBar(100);
                  window.location.replace(this.responseText);
             }                   
