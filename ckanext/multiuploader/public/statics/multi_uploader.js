@@ -82,9 +82,14 @@ $(document).ready(function(){
             $(this).remove();
             if($('.file-row').length === 0){
                 forbiddenLimit = false;
+                $('#file-danger-size').hide();
                 $('#UpBtn').click();
             }
             else{
+                checkFileSizes();
+                if(!forbiddenLimit){
+                    $('#file-danger-size').hide();
+                }
                 $("#fileUpload")[0].value = '';
                 $('#fileUpload').trigger("change");
             }
@@ -106,8 +111,7 @@ $(document).ready(function(){
         if($('#urlBox:visible').length !== 0 && LinkValidity()){ // Link upload (not file)
             uploadLink(sBtn);
             return 0;
-        }            
-        var file_counter = 1;         
+        }                 
         if(fileValidity()){ 
             $('#file-danger-size').hide();
             $('#progress-modal').modal({
