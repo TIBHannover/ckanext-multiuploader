@@ -120,8 +120,7 @@ $(document).ready(function(){
                 show: true 
             });           
             for(var i = 0; i < fileList.length; i++){            
-                uploadFiles(fileList[i], sBtn, fileList.length); // upload a file
-                file_counter ++;          
+                uploadFiles(fileList[i], sBtn, fileList.length); // upload a file        
             } 
         }
         else{ 
@@ -152,6 +151,7 @@ $(document).ready(function(){
  * @param {*} percent 
  */
 function updateProgressBar(percent){ 
+    percent = Math.ceil(percent);
     $('#upload-progress-bar').css('width', percent + '%');
     $('#upload-progress-bar').html(percent + '%');
 }
