@@ -88,6 +88,12 @@
   {% endblock %}
 
   <div class="form-actions">
+  {% block cancel_dataset %}
+      {% if stage %} 
+        {% set dest_url = h.url_for('cancel_dataset_creation.cancel_dataset', package_id=pkg_dict.id, is_draft=0, _external=True) %}
+       <a class="btn btn-danger pull-left" href="{{dest_url}}" data-module="confirm-action" data-module-content="{{ _('Are you sure you want to delete this dataset?') }}">{{ _('Cancel & Delete Dataset') }}</a>
+      {% endif %}
+    {% endblock %}
     {% block delete_button %}
       {% if data.id %}
         {% if h.check_access('resource_delete', {'id': data.id})  %}
