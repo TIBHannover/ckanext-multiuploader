@@ -1,0 +1,25 @@
+<div class="modal fade" tabindex="-1" role="dialog" id="progress-modal">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">{{_('Upload in Progress')}}</h5>
+      </div>
+      <div class="modal-body">
+        <div class="progress" id="progress-bar-container">
+           <div class="progress-bar progress-bar-striped progress-bar-animated" id="upload-progress-bar" role="progressbar" aria-valuenow="100" aria-valuemin="50" aria-valuemax="100">
+              {{_('Uploading ...')}}
+           </div>
+        </div>
+        <div id="upload-error-container">
+          <i class='fa fa-exclamation-circle' style='font-size:48px;color:red'></i>
+            <p>
+              {{_("Upload failed! Please try later.")}}
+            </p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="upload-progress-modal-close" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>

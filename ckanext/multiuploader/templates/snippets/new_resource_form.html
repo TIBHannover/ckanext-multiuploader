@@ -22,18 +22,16 @@
 
   <input id="id" value="{{ data.id }}" type="hidden"/>
   <input id="pck_id" value="{{ pkg_name }}" type="hidden"/>
+  {% snippet 'snippets/progress_bar_modal.html' %}
 
   {% block basic_fields %}
     {% block basic_fields_url %}
         <div class="alert alert-danger" id="file-danger">
             {{_('You need to upload file(s) or add a Link ' )}}
         </div>
-        <div class="progress">
-           <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="100" aria-valuemin="50" aria-valuemax="100">
-              {{_('Uploading ...')}}
-           </div>
+        <div class="alert alert-danger" id="file-danger-size">
+            {{_('Please check your file(s) size. Each file has to be less than 2 GB.' )}}
         </div>
-        
         <div id="dataTitle">{{_('Data')}}:</div><br>
         <button  type="button" class="btn btn-primary fakebtn" id="UpBtn">{{_('Upload')}}</button>
         <button  type="button" class="btn btn-primary fakebtn" id="LinkBtn">{{_('Link')}}</button>
@@ -46,9 +44,13 @@
         <input type="file" name="urls[]" multiple="multiple" id="fileUpload">
     {% endblock %}
     <br><br><br>
-    
+    <div class="alert alert-warning">
+        <p>
+          {{_('Please note: Maximum size for a single file is limited to 2 GB.')}}
+        </p>
+      </div>
     {% block basic_fields_name %}
-   
+      
       <div id="fileNameBox">
         <label for="fileNames">{{_('Files')}}</label>
         <div class="row" id="fileNames">

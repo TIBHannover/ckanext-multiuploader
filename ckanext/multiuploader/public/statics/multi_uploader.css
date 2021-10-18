@@ -61,7 +61,7 @@
     width: 40%;
     transform: translate(-50%,-50%);
 }
-#file-danger{
+#file-danger, #file-danger-size{
     display: none;
 }
 
@@ -70,8 +70,8 @@
     background-color: #ccdcff;
 }
 
-.progress{
-    display: none;
+#progress-modal {
+    top: 25%;
 }
 
 .progress > div {
@@ -88,4 +88,38 @@
       width: 100%;
       color: black;
 }
-  
+
+#upload-progress-bar{
+    width: 1%;
+}
+
+.size-alert{
+    background-color: red;
+    color: white;
+    display: inline-block;
+    border-radius: 15px;
+    width: 100px;
+    text-align: center;
+    height: 20px;
+    margin-left: 5px;
+}
+
+.size-alert-span{
+    display: none;
+}
+
+#upload-error-container{
+    text-align: center;
+    display: none;
+}
+
+#upload-error-container > p{
+    font-size: 20px;
+}
+
+#upload-progress-modal-close{
+    display: none;
+    background-color: red;
+    color: white;
+}
+
