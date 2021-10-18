@@ -89,7 +89,7 @@
 
   <div class="form-actions">
   {% block cancel_dataset %}
-      {% if stage %} 
+      {% if stage and h.cancel_dataset_is_enabled() %} 
         {% set dest_url = h.url_for('cancel_dataset_creation.cancel_dataset', package_id=pkg_dict.id, is_draft=0, _external=True) %}
        <a class="btn btn-danger pull-left" href="{{dest_url}}" data-module="confirm-action" data-module-content="{{ _('Are you sure you want to delete this dataset?') }}">{{ _('Cancel & Delete Dataset') }}</a>
       {% endif %}

@@ -9,6 +9,7 @@ from flask import Blueprint
 class MultiuploaderPlugin(plugins.SingletonPlugin):
     plugins.implements(plugins.IConfigurer)
     plugins.implements(plugins.IBlueprint)
+    plugins.implements(plugins.ITemplateHelpers)
 
     # IConfigurer
 
@@ -33,3 +34,8 @@ class MultiuploaderPlugin(plugins.SingletonPlugin):
             )
 
         return blueprint
+    
+    #ITemplateHelpers
+
+    def get_helpers(self):
+        return {'cancel_dataset_is_enabled': UploadController.cancel_dataset_plugin_is_enabled}

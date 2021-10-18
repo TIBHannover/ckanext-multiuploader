@@ -34,4 +34,9 @@ class UploadController():
 
         else:
             return toolkit.abort(403, "You need to authenticate before accessing this function" )
-            
+    
+
+    def cancel_dataset_plugin_is_enabled():
+        if Helper.check_plugin_enabled('cancel_dataset_creation'):
+            return True
+        return False
