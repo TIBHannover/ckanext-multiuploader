@@ -24,7 +24,7 @@ To install ckanext-multiuploader:
 2. Clone the source and install it on the virtualenv (Suggested location: /usr/lib/ckan/default/src)
 :
 
-        git clone https://github.com//ckanext-multiuploader.git
+        git clone https://github.com/TIBHannover/ckanext-multiuploader.git
         cd ckanext-multiuploader
         pip install -e .
         pip install -r requirements.txt
