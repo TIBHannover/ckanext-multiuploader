@@ -38,6 +38,13 @@ To install ckanext-multiuploader:
         sudo service apache2 reload
 
 
+## Usage and Config
+
+**Note**: you have to set the max resource size in ckan configuration (`/etc/ckan/default/ckan.ini`)
+
+        ckan.max_resource_size
+
+
 
 ## Tests
 
