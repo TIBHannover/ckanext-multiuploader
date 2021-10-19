@@ -45,4 +45,6 @@ class UploadController():
         max_size = toolkit.config.get("ckan.max_resource_size")
         if not max_size:
             return 'unknown'
+        elif int(int(max_size) / 1000) == 0:
+            return str(int(max_size) / 1000)    
         return str(int(int(max_size) / 1000))
