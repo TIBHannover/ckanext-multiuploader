@@ -3,6 +3,15 @@
 This CKAN extension helps users to upload multiple resources at once with drag&drop. 
 
 
+## Screenshots
+
+![mu1](https://user-images.githubusercontent.com/16546640/137907722-4757b272-8959-428f-9033-fb4d58587dae.png)
+----------------------
+![mu2](https://user-images.githubusercontent.com/16546640/137907804-5c49aeb6-8c79-48b9-a7ab-99812b7e519d.png)
+----------------------
+![mu3](https://user-images.githubusercontent.com/16546640/137907849-c49a5fb5-ccec-46a4-9023-e318fd3c4599.png)
+
+
 ## Requirements
 
 Compatibility with core CKAN versions:
