@@ -14,7 +14,6 @@ var uploadMaxLimit = parseInt($('#upload_limit').val());
 if (uploadMaxLimit === 0){
     uploadMaxLimit = parseFloat($('#upload_limit').val());
 }
-alert(uploadMaxLimit);
 $(document).ready(function(){
     $('#UpBtn').on('click', function() {     // click the upload/remove button
         if ($('#UpBtn').hasClass('uploaded')){ // Remove all files (file are already added to the file box)
