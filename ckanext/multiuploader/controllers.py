@@ -40,3 +40,9 @@ class UploadController():
         if Helper.check_plugin_enabled('cancel_dataset_creation'):
             return True
         return False
+    
+    def get_upload_limit():
+        max_size = toolkit.config.get("ckan.max_resource_size")
+        if not max_size:
+            return 'unknown'
+        return str(int(int(max_size) / 1000))

@@ -10,6 +10,7 @@ var test_test = "";
 var uploadPercent = 0;
 var forbiddenLimit = false;
 var already_uploaded_count = 0;
+var uploadMaxLimit = parseInt($('#upload_limit').val());
 $(document).ready(function(){
     $('#UpBtn').on('click', function() {     // click the upload/remove button
         if ($('#UpBtn').hasClass('uploaded')){ // Remove all files (file are already added to the file box)
@@ -166,7 +167,7 @@ function checkFileSizes(){
     for (var i = 0; i < fileList.length; i++)
         {
             fileSize = fileList[i].size / 1000000000; // Size in GB
-            if (fileSize > 2){
+            if (fileSize > uploadMaxLimit){
                 forbiddenLimit = true;
                  $('#size-alert-id-' + i).show();
             }

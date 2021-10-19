@@ -26,11 +26,12 @@
 
   {% block basic_fields %}
     {% block basic_fields_url %}
+        <input type="hidden" id="upload_limit" value={{h.get_max_upload_size()}}>
         <div class="alert alert-danger" id="file-danger">
             {{_('You need to upload file(s) or add a Link ' )}}
         </div>
         <div class="alert alert-danger" id="file-danger-size">
-            {{_('Please check your file(s) size. Each file has to be less than 2 GB.' )}}
+            {{_('Please check your file(s) size. Each file has to be less than ' ) + h.get_max_upload_size() + ' GB'}}
         </div>
         <div id="dataTitle">{{_('Data')}}:</div><br>
         <button  type="button" class="btn btn-primary fakebtn" id="UpBtn">{{_('Upload')}}</button>
@@ -46,7 +47,7 @@
     <br><br><br>
     <div class="alert alert-warning">
         <p>
-          {{_('Please note: Maximum size for a single file is limited to 2 GB.')}}
+          {{_('Please note: Maximum size for a single file is limited to ') +  h.get_max_upload_size()  + ' GB.'}}
         </p>
       </div>
     {% block basic_fields_name %}
