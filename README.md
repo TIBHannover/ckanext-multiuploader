@@ -17,11 +17,12 @@ Compatibility with core CKAN versions:
 
 To install ckanext-multiuploader:
 
-1. Activate your CKAN virtual environment, for example:
+1. Activate your CKAN virtual environment and install:
 
-     . /usr/lib/ckan/default/bin/activate
+         > . /usr/lib/ckan/default/bin/activate
+         > pip install ckanext-multiuploader
 
-2. Clone the source and install it on the virtualenv (Suggested location: /usr/lib/ckan/default/src)
+ OR, Clone the source and install it on the virtualenv (Suggested location: /usr/lib/ckan/default/src)
 :
 
         git clone https://github.com/TIBHannover/ckanext-multiuploader.git
@@ -29,11 +30,11 @@ To install ckanext-multiuploader:
         pip install -e .
         pip install -r requirements.txt
 
-3. Add `multiuploader` to the `ckan.plugins` setting in your CKAN
+2. Add `multiuploader` to the `ckan.plugins` setting in your CKAN
    config file (by default the config file is located at
    `/etc/ckan/default/ckan.ini`).
 
-4. Restart CKAN. For example if you've deployed CKAN with Apache on Ubuntu:
+3. Restart CKAN. For example if you've deployed CKAN with Apache on Ubuntu:
 
         sudo service apache2 reload
 

@@ -12,16 +12,16 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='''ckanext-multiuploader''',
-    version='1.0.1',
-    description='''''',
+    version='1.1.2',
+    description='''This CKAN extension helps users to upload multiple resources at once with drag&drop.''',
     long_description=long_description,
     long_description_content_type="text/markdown",
 
     # The project's main homepage.
-    #url='https://github.com//ckanext-multiuploader',
+    url='https://github.com/TIBHannover/ckanext-multiuploader',
 
     # Author details
-    author='''Pooya''',
+    author='''Pooya Oladazimi, Technische Informationsbibliothek(TIB)''',
     author_email='''pooya.oladazimi@tib.eu''',
 
     # Choose your license
@@ -33,14 +33,14 @@ setup(
         # 3 - Alpha
         # 4 - Beta
         # 5 - Production/Stable
-        'Development Status :: 4 - Beta',
+        'Development Status :: 3 - Alpha',
 
         # Pick your license as you wish (should match "license" above)
         'License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)',
 
         # Specify the Python versions you support here. In particular, ensure
         # that you indicate whether you support Python 2, Python 3 or both.
-        'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3',
     ],
 
 
