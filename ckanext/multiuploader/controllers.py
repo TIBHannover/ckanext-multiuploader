@@ -21,7 +21,10 @@ class UploadController():
                 
                 else: # Add resource to a draft dataset
                     Helper.add_resource(package_name, request, True, int(request.form['isLink']))
-                    if Helper.check_plugin_enabled("organization_group"): # if organization_group plugin exists:
+                    if Helper.check_plugin_enabled("resource_custom_metadata"): # if resource_custom_metadata plugin exists:
+                        return h.url_for('resource_custom_metadata.index', id=str(package_name) ,  _external=True)
+
+                    elif Helper.check_plugin_enabled("organization_group"): # if organization_group plugin exists:
                         return h.url_for('organization_group.add_ownership_view', id=str(package_name) ,  _external=True)
 
                     elif Helper.check_plugin_enabled("media_wiki"): # if media_wiki plugin exists
