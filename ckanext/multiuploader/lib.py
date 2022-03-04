@@ -36,6 +36,7 @@ class Helper():
                 'upload': resource,
             }
             resource = toolkit.get_action('resource_create')(context, resource_data)
+            package = toolkit.get_action('package_show')({}, {'name_or_id': package_name})
             package['resources'].append(resource)
             if active:
                 package['state'] = 'active'
