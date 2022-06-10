@@ -36,6 +36,7 @@ $(document).ready(function(){
         fileList = [];
         emptyFiles();  
         $(this).hide();
+        $('#file-danger').hide(); 
     });
 
 
