@@ -12,7 +12,7 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='''ckanext-multiuploader''',
-    version='1.1.2',
+    version='1.0.1',
     description='''This CKAN extension helps users to upload multiple resources at once with drag&drop.''',
     long_description=long_description,
     long_description_content_type="text/markdown",
