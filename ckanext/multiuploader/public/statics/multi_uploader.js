@@ -16,27 +16,26 @@ if (uploadMaxLimit === 0){
 }
 $(document).ready(function(){
 
+
     /**
      * click the upload/remove button
      */
-    $('#UpBtn').on('click', function() {     
-        if ($('#UpBtn').hasClass('uploaded')){
-            // Remove all files (file are already added to the file box) 
-            $('#LinkBtn').show();
-            $('#UpBtn').css('background-color', 'white');
-            $('#UpBtn').css('color', 'black');
-            $('#UpBtn').css('width', '80px');
-            $('#UpBtn').text('Upload');
-            $('#UpBtn').removeClass('uploaded');
-            $('#fileUpload').val('');
-            $('#fileNameMessage').show();            
-            fileList = [];
-            emptyFiles();       
-        }
-        else{
-             // upload files
-            $('#fileUpload').trigger('click');
-        }            
+    $('#UpBtn').on('click', function() {
+        $('#fileUpload').trigger('click');
+               
+    });
+
+
+    /**
+     * Click Remove All button to remove already uploaded files.
+     */
+    $("#RemoveBtn").click(function(){
+        $('#LinkBtn').show();
+        $('#fileUpload').val('');
+        $('#fileNameMessage').show();
+        fileList = [];
+        emptyFiles();  
+        $(this).hide();
     });
 
 
@@ -66,13 +65,9 @@ $(document).ready(function(){
         }
         checkFileSizes();
         $('#LinkBtn').hide();
-        $('#UpBtn').css('background-color', 'red');
-        $('#UpBtn').css('color', 'white');
-        $('#UpBtn').css('width', '110px');
-        $('#UpBtn').text('Remove all');
-        $('#UpBtn').addClass('uploaded');
-
+        $('#RemoveBtn').show();
     });
+
 
 
     /**
@@ -80,6 +75,7 @@ $(document).ready(function(){
      */
     $('#LinkBtn').click(function(){ 
         $('#UpBtn').hide();
+        $('#RemoveBtn').hide();
         $('#fileNameBox').hide();
         $('#urlBox').show();
         $(this).hide();
@@ -257,7 +253,7 @@ function uploadFiles(file, action, Max){
 
 /**
  * 
- * Upload a link instaed of a file
+ * Upload a link instead of a file
  */
 function uploadLink(action){
     var formdata = new FormData();

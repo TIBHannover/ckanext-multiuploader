@@ -35,6 +35,7 @@
         </div>
         <div id="dataTitle">{{_('Data')}}:</div><br>
         <button  type="button" class="btn btn-primary fakebtn" id="UpBtn">{{_('Upload')}}</button>
+        <button  type="button" class="btn btn-primary fakebtn" id="RemoveBtn">{{_('Remove All')}}</button>
         <button  type="button" class="btn btn-primary fakebtn" id="LinkBtn">{{_('Link')}}</button>
         <div id='urlBox'>
             {{ form.input('url', id='urlText', label=_('URL'), placeholder=_('http://example.com/my-image.jpg'), value=data.name, error=errors.name, classes=['control-full']) }}

@@ -22,6 +22,7 @@
     display: none;
     position: relative;    
 }
+
 #urlRemove{
     background-color: red;
     color: white;
@@ -121,5 +122,12 @@
     display: none;
     background-color: red;
     color: white;
+}
+
+#RemoveBtn{
+    background-color: red;
+    color: white;
+    width: 110px;
+    display: none;
 }
 
