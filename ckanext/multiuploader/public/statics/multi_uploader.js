@@ -36,7 +36,8 @@ $(document).ready(function(){
         fileList = [];
         emptyFiles();  
         $(this).hide();
-        $('#file-danger').hide(); 
+        $('#file-danger-size').hide(); 
+        $('#file-danger').hide();
     });
 
 
