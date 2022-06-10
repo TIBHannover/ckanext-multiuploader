@@ -74,11 +74,9 @@ $(document).ready(function(){
      *  No file upload, add a link instead of a data file
      */
     $('#LinkBtn').click(function(){ 
-        $('#UpBtn').hide();
         $('#RemoveBtn').hide();
-        $('#fileNameBox').hide();
+        $('.upload-related-parts').hide();
         $('#urlBox').show();
-        $(this).hide();
         $('#file-danger').hide();
     });
 
@@ -87,9 +85,7 @@ $(document).ready(function(){
      * remove the added url
      */
     $('#urlRemove').click(function(){ 
-        $('#UpBtn').show();
-        $('#LinkBtn').show();
-        $('#fileNameBox').show();
+        $('.upload-related-parts').show();
         $('#urlBox').hide();
         $('#file-danger').hide();        
     });
