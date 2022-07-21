@@ -65,10 +65,11 @@
       </div>
     
               
-    {% endblock %}
-
+    {% endblock %}    
     {% block basic_fields_description %}
-      {{ form.markdown('description', id='field-description', label=_('Description'), placeholder=_('Some useful notes about the data'), value=data.description, error=errors.description) }}
+      {% if h.which_sfb_multiuploader() != "1368" %}
+        {{ form.markdown('description', id='field-description', label=_('Description'), placeholder=_('Some useful notes about the data'), value=data.description, error=errors.description) }}
+      {% endif %}
     {% endblock %}
 
    

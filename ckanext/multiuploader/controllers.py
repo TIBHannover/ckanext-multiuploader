@@ -54,7 +54,7 @@ class UploadController():
     
 
     @staticmethod
-    def which_sfb():
+    def which_sfb_multiuploader():
         '''
             Check which sfb server the plugin is runnung in. 
         '''
