@@ -39,5 +39,6 @@ class MultiuploaderPlugin(plugins.SingletonPlugin):
 
     def get_helpers(self):
         return {'cancel_dataset_is_enabled': UploadController.cancel_dataset_plugin_is_enabled, 
-            'get_max_upload_size': UploadController.get_upload_limit
+            'get_max_upload_size': UploadController.get_upload_limit,
+            'which_sfb': UploadController.which_sfb
         }

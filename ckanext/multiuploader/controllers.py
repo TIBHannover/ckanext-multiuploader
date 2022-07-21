@@ -51,3 +51,18 @@ class UploadController():
         elif int(int(max_size) / 1000) == 0:
             return str(int(max_size) / 1000)    
         return str(int(int(max_size) / 1000))
+    
+
+    @staticmethod
+    def which_sfb():
+        '''
+            Check which sfb server the plugin is runnung in. 
+        '''
+
+        ckan_root_path = toolkit.config.get('ckan.root_path')
+        if  ckan_root_path and 'sfb1368/ckan' in ckan_root_path:
+            return '1368'
+        elif ckan_root_path and 'sfb1153/ckan' in ckan_root_path:
+            return '1153'
+        else:            
+            return '1368'
