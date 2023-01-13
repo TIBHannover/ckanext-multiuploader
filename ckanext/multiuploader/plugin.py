@@ -32,6 +32,13 @@ class MultiuploaderPlugin(plugins.SingletonPlugin):
             UploadController.upload_resources,
             methods=['POST']
             )
+        
+        blueprint.add_url_rule(
+            u'/multiuploader/delete_uploaded_resources',
+            u'delete_uploaded_resources',
+            UploadController.delete_uploaded_resources,
+            methods=['POST']
+            )
 
         return blueprint
     

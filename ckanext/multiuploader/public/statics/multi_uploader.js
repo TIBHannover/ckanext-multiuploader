@@ -4,6 +4,7 @@
  * Author: p.oladazimi 
  */
 
+var reqUpload = new XMLHttpRequest();
 var fileList = [];
 var dest_url = $('#dest_url').val();
 var test_test = "";
@@ -180,6 +181,20 @@ $(document).ready(function(){
     });
 
 
+    /**
+     * Cancel an ongoing upload
+     */
+    $('#upload-cancel').click(function(){
+        reqUpload.abort();
+        cancelAlreadyUploaded();
+        already_uploaded_count = 0;
+        uploadPercent = 0;
+        $('#progress-bar-container').show();
+        $('#upload-error-container').hide();
+        $('#upload-progress-modal-close').hide();
+    });
+
+
 });
 
 
@@ -220,17 +235,16 @@ function uploadFiles(file, action, Max){
     formdata.set('pck_id', $('#pck_id').val());
     formdata.set('save', action);
     formdata.set('id', $('#id').val());
-    formdata.set('description', $('#field-description').val());
-    var req = new XMLHttpRequest();
+    formdata.set('description', $('#field-description').val());    
     var oldProgress = 0;
-    req.upload.addEventListener('progress', function(e){
+    reqUpload.upload.addEventListener('progress', function(e){
         let progress = (Math.ceil(e.loaded/(e.total * 1.1) * 100) / Max);
         uploadPercent += (progress - oldProgress)
         updateProgressBar(uploadPercent);
         oldProgress = progress
     }, false);
-    req.onreadystatechange = function() {
-        if (req.readyState == XMLHttpRequest.DONE && req.status === 200) {      
+    reqUpload.onreadystatechange = function() {
+        if (reqUpload.readyState == XMLHttpRequest.DONE && reqUpload.status === 200) {      
             already_uploaded_count += 1; 
             if (already_uploaded_count === Max){
                 updateProgressBar(100);
@@ -238,14 +252,14 @@ function uploadFiles(file, action, Max){
             }                   
             
         }
-        else if (req.readyState == XMLHttpRequest.DONE && req.status !== 200){
+        else if (reqUpload.readyState == XMLHttpRequest.DONE && reqUpload.status !== 200){
             $('#progress-bar-container').hide();
             $('#upload-error-container').show();
             $('#upload-progress-modal-close').show();
         }
     }
-    req.open("POST", dest_url)
-    req.send(formdata)
+    reqUpload.open("POST", dest_url)
+    reqUpload.send(formdata)
     return 0;
 }
 
@@ -272,6 +286,26 @@ function uploadLink(action){
     req.send(formdata)
     return 0;
 }
+
+/**
+ * Cancel uploaded files
+ */
+function cancelAlreadyUploaded(){
+    var formdata = new FormData();
+    let dest_url = $('#cancel_upload_url').val();
+    formdata.set('pck_id', $('#pck_id').val());
+    var req = new XMLHttpRequest();
+    req.onreadystatechange = function() {
+        if (req.readyState == XMLHttpRequest.DONE && req.status === 200) {       
+            return 1;                              
+        }
+    }
+    req.open("POST", dest_url)
+    req.send(formdata)
+    return 1;
+}
+
+
 
 /**
  * 
