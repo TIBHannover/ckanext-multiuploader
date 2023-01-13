@@ -4,7 +4,7 @@
  * Author: p.oladazimi 
  */
 
-var reqUpload = new XMLHttpRequest();
+var uploadReqs = [];
 var fileList = [];
 var dest_url = $('#dest_url').val();
 var test_test = "";
@@ -185,7 +185,9 @@ $(document).ready(function(){
      * Cancel an ongoing upload
      */
     $('#upload-cancel').click(function(){
-        reqUpload.abort();
+        for(let i=0; i<uploadReqs.length; i++){
+            uploadReqs[i].abort();
+        }        
         cancelAlreadyUploaded();
         already_uploaded_count = 0;
         uploadPercent = 0;
@@ -230,6 +232,8 @@ function checkFileSizes(){
  */
 function uploadFiles(file, action, Max){    
     var formdata = new FormData();
+    let reqUpload = new XMLHttpRequest();
+    uploadReqs.push(reqUpload);
     formdata.set('files', file);
     formdata.set('isLink', 0);
     formdata.set('pck_id', $('#pck_id').val());
@@ -245,10 +249,10 @@ function uploadFiles(file, action, Max){
     }, false);
     reqUpload.onreadystatechange = function() {
         if (reqUpload.readyState == XMLHttpRequest.DONE && reqUpload.status === 200) {      
-            already_uploaded_count += 1; 
+            already_uploaded_count += 1;             
             if (already_uploaded_count === Max){
                 updateProgressBar(100);
-                 window.location.replace(this.responseText);
+                window.location.replace(this.responseText);
             }                   
             
         }
