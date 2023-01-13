@@ -43,10 +43,12 @@ class UploadController():
     
     def delete_uploaded_resources():
         package_name = request.form.get('pck_id')
+        filenames = request.form.get('filenames')        
         if toolkit.g.user:
             package = toolkit.get_action('package_show')({}, {'name_or_id': package_name})
-            package['resources'] = []            
-            toolkit.get_action('package_update')({},package)
+            for res in package['resources']:
+                if res['name'] in filenames:
+                    toolkit.get_action('resource_delete')({}, {'id': res['id']})            
             return "True"
         else:
             return toolkit.abort(403, "You need to authenticate before accessing this function" )

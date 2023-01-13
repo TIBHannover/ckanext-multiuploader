@@ -157,7 +157,7 @@ $(document).ready(function(){
                 show: true 
             });           
             for(var i = 0; i < fileList.length; i++){
-                // upload a file       
+                // upload a file
                 uploadFiles(fileList[i], sBtn, fileList.length);   
             } 
         }
@@ -301,11 +301,16 @@ function cancelAlreadyUploaded(){
         $('#upload-progress-modal-close').hide();
         $('#upload-cancel').hide();
     }
+    let filenames = [];
+    for(let i=0; i<fileList.length; i++){
+        filenames.push(fileList[i].name);
+    }
     already_uploaded_count = 0;
     uploadPercent = 0;
     var formdata = new FormData();
     let dest_url = $('#cancel_upload_url').val();
     formdata.set('pck_id', $('#pck_id').val());
+    formdata.set('filenames', filenames);
     var req = new XMLHttpRequest();
     req.onreadystatechange = function() {
         if (req.readyState == XMLHttpRequest.DONE && req.status === 200) {       
