@@ -16,8 +16,14 @@
               {{_("Upload failed! Please try later.")}}
             </p>
         </div>
+        <div class="row cancel-waiting" id="cancel_waiting">
+           <div class="col-sm-12 text-center" id="upload-cancel-sign">
+              <i class="fa fa-spinner fa-spin"></i>{{_(' Canceling. Please Wait.')}}
+           </div>
+        </div>
       </div>
       <div class="modal-footer">
+        <button id="upload-cancel" type="button" class="btn btn-danger">Cancel This Upload</button>
         <button id="upload-progress-modal-close" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
       </div>
     </div>

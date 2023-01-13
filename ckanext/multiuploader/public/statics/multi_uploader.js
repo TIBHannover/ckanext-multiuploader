@@ -4,6 +4,7 @@
  * Author: p.oladazimi 
  */
 
+var uploadReqs = [];
 var fileList = [];
 var dest_url = $('#dest_url').val();
 var test_test = "";
@@ -144,6 +145,11 @@ $(document).ready(function(){
             return 0;
         }                 
         if(fileValidity()){ 
+            $('#cancel_waiting').hide();
+            $('.modal-title').show();            
+            $('#upload-cancel').show();
+            $('#progress-bar-container').show();
+            $('#upload-error-container').hide();
             $('#file-danger-size').hide();
             $('#progress-modal').modal({
                 backdrop: 'static',
@@ -177,6 +183,14 @@ $(document).ready(function(){
     $('#upload-progress-modal-close').click(function(){
         location.reload();
         return false;
+    });
+
+
+    /**
+     * Cancel an ongoing upload
+     */
+    $('#upload-cancel').click(function(){        
+        cancelAlreadyUploaded();        
     });
 
 
@@ -215,37 +229,38 @@ function checkFileSizes(){
  */
 function uploadFiles(file, action, Max){    
     var formdata = new FormData();
+    let reqUpload = new XMLHttpRequest();
+    uploadReqs.push(reqUpload);
     formdata.set('files', file);
     formdata.set('isLink', 0);
     formdata.set('pck_id', $('#pck_id').val());
     formdata.set('save', action);
     formdata.set('id', $('#id').val());
-    formdata.set('description', $('#field-description').val());
-    var req = new XMLHttpRequest();
+    formdata.set('description', $('#field-description').val());    
     var oldProgress = 0;
-    req.upload.addEventListener('progress', function(e){
+    reqUpload.upload.addEventListener('progress', function(e){
         let progress = (Math.ceil(e.loaded/(e.total * 1.1) * 100) / Max);
         uploadPercent += (progress - oldProgress)
         updateProgressBar(uploadPercent);
         oldProgress = progress
     }, false);
-    req.onreadystatechange = function() {
-        if (req.readyState == XMLHttpRequest.DONE && req.status === 200) {      
-            already_uploaded_count += 1; 
+    reqUpload.onreadystatechange = function() {
+        if (reqUpload.readyState == XMLHttpRequest.DONE && reqUpload.status === 200) {      
+            already_uploaded_count += 1;             
             if (already_uploaded_count === Max){
                 updateProgressBar(100);
-                 window.location.replace(this.responseText);
+                window.location.replace(this.responseText);
             }                   
             
         }
-        else if (req.readyState == XMLHttpRequest.DONE && req.status !== 200){
+        else if (reqUpload.readyState == XMLHttpRequest.DONE && reqUpload.status !== 200){
             $('#progress-bar-container').hide();
             $('#upload-error-container').show();
             $('#upload-progress-modal-close').show();
         }
     }
-    req.open("POST", dest_url)
-    req.send(formdata)
+    reqUpload.open("POST", dest_url)
+    reqUpload.send(formdata)
     return 0;
 }
 
@@ -272,6 +287,37 @@ function uploadLink(action){
     req.send(formdata)
     return 0;
 }
+
+/**
+ * Cancel uploaded files
+ */
+function cancelAlreadyUploaded(){
+    $('#cancel_waiting').show();
+    $('#progress-bar-container').hide();
+    $('.modal-title').hide();
+    for(let i=0; i<uploadReqs.length; i++){
+        uploadReqs[i].abort();
+        $('#upload-error-container').hide();
+        $('#upload-progress-modal-close').hide();
+        $('#upload-cancel').hide();
+    }
+    already_uploaded_count = 0;
+    uploadPercent = 0;
+    var formdata = new FormData();
+    let dest_url = $('#cancel_upload_url').val();
+    formdata.set('pck_id', $('#pck_id').val());
+    var req = new XMLHttpRequest();
+    req.onreadystatechange = function() {
+        if (req.readyState == XMLHttpRequest.DONE && req.status === 200) {       
+            $('#progress-modal').modal('hide');                            
+        }
+    }
+    req.open("POST", dest_url)
+    req.send(formdata)
+    return 1;
+}
+
+
 
 /**
  * 

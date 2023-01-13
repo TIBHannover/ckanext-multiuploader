@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-from flask import request, url_for
+from flask import request
 import ckan.lib.helpers as h
 from ckanext.multiuploader.lib import Helper
 import ckan.plugins.toolkit as toolkit
@@ -39,10 +39,25 @@ class UploadController():
             return toolkit.abort(403, "You need to authenticate before accessing this function" )
     
 
+    
+    
+    def delete_uploaded_resources():
+        package_name = request.form.get('pck_id')
+        if toolkit.g.user:
+            package = toolkit.get_action('package_show')({}, {'name_or_id': package_name})
+            package['resources'] = []            
+            toolkit.get_action('package_update')({},package)
+            return "True"
+        else:
+            return toolkit.abort(403, "You need to authenticate before accessing this function" )
+    
+    
+    
     def cancel_dataset_plugin_is_enabled():
         if Helper.check_plugin_enabled('cancel_dataset_creation'):
             return True
         return False
+    
     
     def get_upload_limit():
         max_size = toolkit.config.get("ckan.max_resource_size")
