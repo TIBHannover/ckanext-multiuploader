@@ -146,7 +146,10 @@ $(document).ready(function(){
         }                 
         if(fileValidity()){ 
             $('#cancel_waiting').hide();
+            $('.modal-title').show();            
+            $('#upload-cancel').show();
             $('#progress-bar-container').show();
+            $('#upload-error-container').hide();
             $('#file-danger-size').hide();
             $('#progress-modal').modal({
                 backdrop: 'static',
@@ -186,11 +189,7 @@ $(document).ready(function(){
     /**
      * Cancel an ongoing upload
      */
-    $('#upload-cancel').click(function(){
-        $('#cancel_waiting').show();
-        $('#progress-bar-container').hide();   
-        $('#upload-error-container').hide();
-        $('#upload-progress-modal-close').hide();
+    $('#upload-cancel').click(function(){        
         cancelAlreadyUploaded();        
     });
 
@@ -293,8 +292,14 @@ function uploadLink(action){
  * Cancel uploaded files
  */
 function cancelAlreadyUploaded(){
+    $('#cancel_waiting').show();
+    $('#progress-bar-container').hide();
+    $('.modal-title').hide();
     for(let i=0; i<uploadReqs.length; i++){
         uploadReqs[i].abort();
+        $('#upload-error-container').hide();
+        $('#upload-progress-modal-close').hide();
+        $('#upload-cancel').hide();
     }
     already_uploaded_count = 0;
     uploadPercent = 0;
