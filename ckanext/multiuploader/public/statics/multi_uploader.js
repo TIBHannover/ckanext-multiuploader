@@ -235,11 +235,7 @@ function uploadFiles(file, action, Max) {
     formdata.set('id', $('#id').val());
     formdata.set('description', $('#field-description').val());
     // add csrf token
-    // Get the csrf value from the page meta tag
     var csrf_value = $('meta[name=_csrf_token]').attr('content')
-    // Create the hidden input
-    // var hidden_csrf_input = $('<input name="_csrf_token" type="hidden" value="' + csrf_value + '">')
-    // Insert the hidden input at the beginning of the form
     formdata.append('csrf_token', csrf_value);
 
     var oldProgress = 0;
