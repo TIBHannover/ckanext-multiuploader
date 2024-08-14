@@ -236,7 +236,15 @@ function uploadFiles(file, action, Max){
     formdata.set('pck_id', $('#pck_id').val());
     formdata.set('save', action);
     formdata.set('id', $('#id').val());
-    formdata.set('description', $('#field-description').val());    
+    formdata.set('description', $('#field-description').val());
+    // add csrf token
+    // Get the csrf value from the page meta tag
+    var csrf_value = $('meta[name=_csrf_token]').attr('content')
+    // Create the hidden input
+    var hidden_csrf_input = $('<input name="_csrf_token" type="hidden" value="' + csrf_value + '">')
+    // Insert the hidden input at the beginning of the form
+    hidden_csrf_input.prependTo(formdata)
+    
     var oldProgress = 0;
     reqUpload.upload.addEventListener('progress', function(e){
         let progress = (Math.ceil(e.loaded/(e.total * 1.1) * 100) / Max);
