@@ -12,7 +12,7 @@
 <input type="hidden" value="{{cancelUrl}}" id="cancel_upload_url" >
 
 <form id="resource-edit" class="dataset-form dataset-resource-form" method="post" action="" data-module="basic-form resource-form" enctype="multipart/form-data">
-
+  {{ h.csrf_input() if 'csrf_input' in h }}
   {% block stages %}
     {# An empty stages variable will not show the stages #}
     {% if stage %}
@@ -21,7 +21,6 @@
   {% endblock %}
 
   {% block errors %}{{ form.errors(error_summary) }}{% endblock %}
-
   <input id="id" value="{{ data.id }}" type="hidden"/>
   <input id="pck_id" value="{{ pkg_name }}" type="hidden"/>
   {% snippet 'snippets/progress_bar_modal.html' %}
