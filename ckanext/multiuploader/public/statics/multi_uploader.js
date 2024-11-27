@@ -236,7 +236,7 @@ function uploadFiles(file, action, Max) {
     formdata.set('description', $('#field-description').val());
     // add csrf token
     var csrf_value = $('meta[name=_csrf_token]').attr('content')
-    formdata.append('csrf_token', csrf_value);
+    formdata.append('_csrf_token', csrf_value);
 
     var oldProgress = 0;
     reqUpload.upload.addEventListener('progress', function (e) {
