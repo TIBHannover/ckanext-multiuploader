@@ -1,0 +1,35 @@
+{% ckan_extends %}
+
+{% block url_type_select %}
+{{ super() }}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Replace the button with id "replace-button" after the content is loaded
+        var oldUPButton = document.getElementById('resource-upload-button');
+        if (oldUPButton) {
+            oldUPButton.id = 'UpBtn';
+            oldUPButton.classList.add('upload-related-parts');
+            oldUPButton.removeAttribute('onclick');
+        }
+        var oldLinkButton = document.getElementById('resource-link-button');
+        if (oldLinkButton) {
+            oldLinkButton.id = 'LinkBtn';
+            oldLinkButton.classList.add('upload-related-parts');
+            oldLinkButton.removeAttribute('onclick');
+        }
+    });
+</script>
+<div id='urlBox'>
+    {{ form.input('url', id='urlText', label=_('URL'), placeholder=_('http://example.com/my-image.jpg'),
+    value=data.name, error=errors.name, classes=['control-full']) }}
+    <button type="button" class="btn btn-primary" id="urlRemove">Remove</button>
+    <br><br>
+    {{ form.input('urlName', id='urlName', label=_('Name'), placeholder=_('eg. January 2011 Gold Prices'),
+    value=data.name, error=errors.name, classes=['control-full']) }}
+</div>
+<input type="file" name="urls[]" multiple="multiple" id="fileUpload">
+{% endblock %}
+
+{% block url_type_fields %}
+{{ super() }}
+{% endblock %}
