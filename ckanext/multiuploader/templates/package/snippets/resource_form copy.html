@@ -8,6 +8,8 @@
 {% set action = h.url_for('multiuploader.upload_resources', _external=True) %}
 {% set cancelUrl = h.url_for('multiuploader.delete_uploaded_resources', _external=True) %}
 
+{% set single_action = form_action or h.url_for(dataset_type ~ '_resource.new', id=pkg_name) %}
+
 {#
 data - resource form data fields
 errors - errors on resource form fields
@@ -23,7 +25,7 @@ placeholder - placeholder text for url field
 <input type="hidden" value="{{action}}" id="dest_url">
 <input type="hidden" value="{{cancelUrl}}" id="cancel_upload_url">
 
-<form id="resource-edit" class="dataset-form dataset-resource-form" method="post" action=""
+<form id="resource-edit" class="dataset-form dataset-resource-form" method="post" action="{{ single_action }}"
     data-module="basic-form resource-form" enctype="multipart/form-data">
     {{ h.csrf_input() }}
     {% block stages %}
@@ -37,6 +39,8 @@ placeholder - placeholder text for url field
     <input id="id" value="{{ data.id }}" type="hidden" />
     <input id="pck_id" value="{{ pkg_name }}" type="hidden" />
     {% snippet 'package/snippets/progress_bar_modal.html' %}
+
+    <input name="id" value="{{ data.id }}" type="hidden" />
 
     {% block basic_fields %}
     {% block basic_fields_url %}
@@ -131,18 +135,18 @@ placeholder - placeholder text for url field
         {% endblock %}
         {% if stage %}
         {% block previous_button %}
-        <button class="btn btn-default" name="Csave" value="go-dataset" type="submit">{{ _('Previous') }}</button>
+        <button class="btn btn-default" name="save" value="go-dataset" type="submit">{{ _('Previous') }}</button>
         {% endblock %}
         {% endif %}
         {% if stage %}
         {% block save_button %}
-        <button id="ckanext_multiuploader_finish" class="btn btn-primary" name="Csave" value="go-metadata"
+        <button id="ckanext_multiuploader_finish" class="btn btn-primary" name="save" value="go-metadata"
             type="submit">{%
             block save_button_text %}{{ _('Finish') }}{% endblock %}</button>
         {% endblock %}
         {% else %}
         {% block add_button %}
-        <button class="btn btn-primary" name="Csave" value="go-dataset-complete" type="submit">{{ _('Add') }}</button>
+        <button class="btn btn-primary" name="save" value="go-dataset-complete" type="submit">{{ _('Add') }}</button>
         {% endblock %}
         {% endif %}
     </div>

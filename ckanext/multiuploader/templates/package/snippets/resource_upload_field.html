@@ -19,17 +19,4 @@
         }
     });
 </script>
-<div id='urlBox'>
-    {{ form.input('url', id='urlText', label=_('URL'), placeholder=_('http://example.com/my-image.jpg'),
-    value=data.name, error=errors.name, classes=['control-full']) }}
-    <button type="button" class="btn btn-primary" id="urlRemove">Remove</button>
-    <br><br>
-    {{ form.input('urlName', id='urlName', label=_('Name'), placeholder=_('eg. January 2011 Gold Prices'),
-    value=data.name, error=errors.name, classes=['control-full']) }}
-</div>
-<input type="file" name="urls[]" multiple="multiple" id="fileUpload">
-{% endblock %}
-
-{% block url_type_fields %}
-{{ super() }}
 {% endblock %}
