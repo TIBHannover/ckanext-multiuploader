@@ -21,7 +21,7 @@ $(document).ready(function () {
     /**
      * click the upload/remove button
      */
-    $('#UpBtn').on('click', function () {
+    $('#resource-upload-button').on('click', function () {
         $('#fileUpload').trigger('click');
 
     });
@@ -31,7 +31,7 @@ $(document).ready(function () {
      * Click Remove All button to remove already uploaded files.
      */
     $("#RemoveBtn").click(function () {
-        $('#LinkBtn').show();
+        $('#resource-link-button').show();
         $('#fileUpload').val('');
         $('#fileNameMessage').show();
         fileList = [];
@@ -65,7 +65,7 @@ $(document).ready(function () {
 
         }
         checkFileSizes();
-        $('#LinkBtn').hide();
+        $('#resource-link-button').hide();
         $('#RemoveBtn').show();
     });
 
@@ -74,7 +74,7 @@ $(document).ready(function () {
     /**
      *  No file upload, add a link instead of a data file
      */
-    $('#LinkBtn').click(function () {
+    $('#resource-link-button').click(function () {
         $('#RemoveBtn').hide();
         $('.upload-related-parts').hide();
         $('#urlBox').show();
@@ -103,7 +103,7 @@ $(document).ready(function () {
             if ($('.file-row').length === 0) {
                 forbiddenLimit = false;
                 $('#file-danger-size').hide();
-                $('#UpBtn').click();
+                $('#resource-upload-button').click();
             }
             else {
                 checkFileSizes();
