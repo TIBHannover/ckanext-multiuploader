@@ -31,26 +31,23 @@
     {% block basic_fields_url %}
     <input type="hidden" id="upload_limit" value={{h.get_max_upload_size()}}>
     <div class="alert alert-danger" id="file-danger">
-        {{_('You need to upload file(s) or add a Link ' )}}
+        {{_('You need to upload file(s)' )}}
     </div>
     <div class="alert alert-danger" id="file-danger-size">
         {{_('Please check your file(s) size. Each file has to be less than ' ) + h.get_max_upload_size() + ' GB'}}
     </div>
-    <div id="dataTitle">{{_('Data')}}:</div><br>
-    <button type="button" class="btn btn-primary fakebtn upload-related-parts" id="UpBtn">{{_('Upload')}}</button>
-    <button type="button" class="btn btn-primary fakebtn" id="RemoveBtn">{{_('Remove All')}}</button>
-    <button type="button" class="btn btn-primary fakebtn upload-related-parts" id="LinkBtn">{{_('Link')}}</button>
-    <div id='urlBox'>
-        {{ form.input('url', id='urlText', label=_('URL'), placeholder=_('http://example.com/my-image.jpg'),
-        value=data.name, error=errors.name, classes=['control-full']) }}
-        <button type="button" class="btn btn-primary" id="urlRemove">Remove</button>
-        <br><br>
-        {{ form.input('urlName', id='urlName', label=_('Name'), placeholder=_('eg. January 2011 Gold Prices'),
-        value=data.name, error=errors.name, classes=['control-full']) }}
+    <div class="select-type">
+        <label id="resource-menu-label" class="form-label">{{ menu_label or _('Data') }}</label>
+        <div role="group" aria-labelledby="resource-menu-label">
+            <button type="button" class="btn btn-default upload-related-parts" id="UpBtn"
+                aria-label="{{ _('Upload files on your computer') }}"
+                data-bs-title="{{ _('Upload files on your computer') }}" data-bs-toggle="tooltip" autofocus="true"><i
+                    class="fa fa-cloud-upload"></i>{{ _("Upload files") }}</button>
+            <button type="button" class="btn btn-default" id="RemoveBtn">{{_('Remove All')}}</button>
+        </div>
     </div>
     <input type="file" name="urls[]" multiple="multiple" id="fileUpload">
     {% endblock %}
-    <br><br><br>
     <div class="alert alert-warning upload-related-parts" id="file-size-info-box">
         <p>
             {{_('Please note: Maximum size for a single file is limited to ') + h.get_max_upload_size() + ' GB.'}}
@@ -68,17 +65,11 @@
         </div>
         <br><br>
     </div>
-
-
     {% endblock %}
     {% block basic_fields_description %}
-    {% if h.which_sfb_multiuploader() != "1368" %}
     {{ form.markdown('description', id='field-description', label=_('Description'), placeholder=_('Some useful notes
-    about the data'), value=data.description, error=errors.description) }}
-    {% endif %}
+    about the data, if set will be added to all uploaded files'), value=data.description, error=errors.description) }}
     {% endblock %}
-
-
     {% endblock basic_fields %}
 
     {% block metadata_fields %}

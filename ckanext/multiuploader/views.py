@@ -19,23 +19,7 @@ blueprint = Blueprint(
 
 
 class MultiUploaderView(MethodView):
-    def post(self, package_type: str, id: str) -> Union[str, Response]:
-        context: Context = {"user": current_user.name, "auth_user_obj": current_user}
-        # data = clean_dict(dict_fns.unflatten(tuplize_dict(parse_params(request.form))))
-        try:
-            pkg_dict = toolkit.get_action("package_show")({}, {"id": id})
-        except (toolkit.ObjectNotFound, toolkit.NotAuthorized):
-            base.abort(404, "Resource not found")
-        try:
-            data_dict = toolkit.get_action("package_show")(context, {"id": id})
-        except toolkit.NotAuthorized:
-            return base.abort(403, _("Unauthorized to update dataset"))
-        except toolkit.NotFound:
-            return base.abort(
-                404, _("The dataset {id} could not be found.").format(id=id)
-            )
-        return toolkit.redirect_to("{}.read".format(package_type), id=id)
-
+    # post is handled by javascript
     def get(
         self,
         package_type: str,

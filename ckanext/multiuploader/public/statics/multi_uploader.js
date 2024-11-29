@@ -31,7 +31,6 @@ $(document).ready(function () {
      * Click Remove All button to remove already uploaded files.
      */
     $("#RemoveBtn").click(function () {
-        $('#LinkBtn').show();
         $('#fileUpload').val('');
         $('#fileNameMessage').show();
         fileList = [];
@@ -65,32 +64,8 @@ $(document).ready(function () {
 
         }
         checkFileSizes();
-        $('#LinkBtn').hide();
-        $('#RemoveBtn').show();
+        $('#RemoveBtn').css('display', 'inline');
     });
-
-
-
-    /**
-     *  No file upload, add a link instead of a data file
-     */
-    $('#LinkBtn').click(function () {
-        $('#RemoveBtn').hide();
-        $('.upload-related-parts').hide();
-        $('#urlBox').show();
-        $('#file-danger').hide();
-    });
-
-
-    /**
-     * remove the added url
-     */
-    $('#urlRemove').click(function () {
-        $('.upload-related-parts').show();
-        $('#urlBox').hide();
-        $('#file-danger').hide();
-    });
-
 
     /**
      * delete an already added file 
@@ -135,11 +110,6 @@ $(document).ready(function () {
         if ($(this).val() === "go-dataset") {
             // previous step (dataset metadat page)
             previous("go-dataset");
-            return 0;
-        }
-        if ($('#urlBox:visible').length !== 0 && LinkValidity()) {
-            // Link upload (not file)
-            uploadLink(sBtn);
             return 0;
         }
         if (fileValidity()) {
@@ -265,33 +235,6 @@ function uploadFiles(file, action, Max) {
     return 0;
 }
 
-/**
- * 
- * Upload a link instead of a file
- */
-function uploadLink(action) {
-    var formdata = new FormData();
-    formdata.set('url', $('#urlText').val());
-    formdata.set('isLink', 1);
-    formdata.set('pck_id', $('#pck_id').val());
-    formdata.set('save', action);
-    formdata.set('name', $('#urlName').val());
-    formdata.set('id', $('#id').val());
-    formdata.set('description', $('#field-description').val());
-    // add csrf token
-    var csrf_value = $('meta[name=_csrf_token]').attr('content')
-    formdata.append('_csrf_token', csrf_value);
-
-    var req = new XMLHttpRequest();
-    req.onreadystatechange = function () {
-        if (req.readyState == XMLHttpRequest.DONE && req.status === 200) {
-            window.location.replace(this.responseText);
-        }
-    }
-    req.open("POST", dest_url)
-    req.send(formdata)
-    return 0;
-}
 
 /**
  * Cancel uploaded files
@@ -360,16 +303,6 @@ function fileValidity() {
     return false
 }
 
-/**
- * Link added by the user or not
- * @returns 
- */
-function LinkValidity() {
-    if ($('#urlText').val() !== '') {
-        return true;
-    }
-    return false
-}
 
 /**
  * empty the File box list
