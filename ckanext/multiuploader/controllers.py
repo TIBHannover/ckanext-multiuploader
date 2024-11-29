@@ -5,81 +5,112 @@ import ckan.lib.helpers as h
 from ckanext.multiuploader.lib import Helper
 import ckan.plugins.toolkit as toolkit
 
-class UploadController():
 
-    def upload_resources():        
-        if toolkit.g.user: 
-            try:               
-                package_name = request.form['pck_id']
-                action = request.form['save']
-                if action == "go-dataset":  # Previous button: go back to the dataset metadat                 
-                    return h.url_for('dataset.edit', id=str(package_name) ,  _external=True)
+class UploadController:
 
-                elif action == "go-dataset-complete": # Add resource to an active dataset
-                    Helper.add_resource(package_name, request, False, int(request.form['isLink']))                
-                    return h.url_for('dataset.read', id=str(package_name) ,  _external=True)
-                
-                else: # Add resource to a draft dataset
-                    Helper.add_resource(package_name, request, True, int(request.form['isLink']))
-                    if Helper.check_plugin_enabled("resource_custom_metadata"): # if resource_custom_metadata plugin exists:
-                        return h.url_for('resource_custom_metadata.index', id=str(package_name) ,  _external=True)
+    def upload_resources(package_type):
+        if toolkit.g.user:
+            try:
+                package_name = request.form["pck_id"]
+                action = request.form["save"]
+                if (
+                    action == "go-dataset"
+                ):  # Previous button: go back to the dataset metadat
+                    return h.url_for(
+                        "dataset.edit", id=str(package_name), _external=True
+                    )
 
-                    elif Helper.check_plugin_enabled("organization_group"): # if organization_group plugin exists:
-                        return h.url_for('organization_group.add_ownership_view', id=str(package_name) ,  _external=True)
+                elif (
+                    action == "go-dataset-complete"
+                ):  # Add resource to an active dataset
+                    Helper.add_resource(
+                        package_name, request, False, int(request.form["isLink"])
+                    )
+                    return h.url_for(
+                        "dataset.read", id=str(package_name), _external=True
+                    )
 
-                    elif Helper.check_plugin_enabled("media_wiki"): # if media_wiki plugin exists
-                        return h.url_for('media_wiki.machines_view', id=str(package_name) ,  _external=True)
+                else:  # Add resource to a draft dataset
+                    Helper.add_resource(
+                        package_name, request, True, int(request.form["isLink"])
+                    )
+                    if Helper.check_plugin_enabled(
+                        "resource_custom_metadata"
+                    ):  # if resource_custom_metadata plugin exists:
+                        return h.url_for(
+                            "resource_custom_metadata.index",
+                            id=str(package_name),
+                            _external=True,
+                        )
 
-                    return h.url_for('dataset.read', id=str(package_name) ,  _external=True)
+                    elif Helper.check_plugin_enabled(
+                        "organization_group"
+                    ):  # if organization_group plugin exists:
+                        return h.url_for(
+                            "organization_group.add_ownership_view",
+                            id=str(package_name),
+                            _external=True,
+                        )
+
+                    elif Helper.check_plugin_enabled(
+                        "media_wiki"
+                    ):  # if media_wiki plugin exists
+                        return h.url_for(
+                            "media_wiki.machines_view",
+                            id=str(package_name),
+                            _external=True,
+                        )
+
+                    return h.url_for(
+                        "dataset.read", id=str(package_name), _external=True
+                    )
             except:
                 return toolkit.abort(400, "missing data")
 
-
         else:
-            return toolkit.abort(403, "You need to authenticate before accessing this function" )
-    
+            return toolkit.abort(
+                403, "You need to authenticate before accessing this function"
+            )
 
-    
-    
     def delete_uploaded_resources():
-        package_name = request.form.get('pck_id')
-        filenames = request.form.get('filenames')        
+        package_name = request.form.get("pck_id")
+        filenames = request.form.get("filenames")
         if toolkit.g.user:
-            package = toolkit.get_action('package_show')({}, {'name_or_id': package_name})
-            for res in package['resources']:
-                if res['name'] in filenames:
-                    toolkit.get_action('resource_delete')({}, {'id': res['id']})            
+            package = toolkit.get_action("package_show")(
+                {}, {"name_or_id": package_name}
+            )
+            for res in package["resources"]:
+                if res["name"] in filenames:
+                    toolkit.get_action("resource_delete")({}, {"id": res["id"]})
             return "True"
         else:
-            return toolkit.abort(403, "You need to authenticate before accessing this function" )
-    
-    
-    
+            return toolkit.abort(
+                403, "You need to authenticate before accessing this function"
+            )
+
     def cancel_dataset_plugin_is_enabled():
-        if Helper.check_plugin_enabled('cancel_dataset_creation'):
+        if Helper.check_plugin_enabled("cancel_dataset_creation"):
             return True
         return False
-    
-    
+
     def get_upload_limit():
         max_size = toolkit.config.get("ckan.max_resource_size")
         if not max_size:
-            return 'unknown'
+            return "unknown"
         elif int(int(max_size) / 1000) == 0:
-            return str(int(max_size) / 1000)    
+            return str(int(max_size) / 1000)
         return str(int(int(max_size) / 1000))
-    
 
     @staticmethod
     def which_sfb_multiuploader():
-        '''
-            Check which sfb server the plugin is runnung in. 
-        '''
+        """
+        Check which sfb server the plugin is runnung in.
+        """
 
-        ckan_root_path = toolkit.config.get('ckan.root_path')
-        if  ckan_root_path and 'sfb1368/ckan' in ckan_root_path:
-            return '1368'
-        elif ckan_root_path and 'sfb1153/ckan' in ckan_root_path:
-            return '1153'
-        else:            
-            return '1368'
+        ckan_root_path = toolkit.config.get("ckan.root_path")
+        if ckan_root_path and "sfb1368/ckan" in ckan_root_path:
+            return "1368"
+        elif ckan_root_path and "sfb1153/ckan" in ckan_root_path:
+            return "1153"
+        else:
+            return "1368"

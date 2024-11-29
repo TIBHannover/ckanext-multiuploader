@@ -21,7 +21,7 @@ $(document).ready(function () {
     /**
      * click the upload/remove button
      */
-    $('#resource-upload-button').on('click', function () {
+    $('#UpBtn').on('click', function () {
         $('#fileUpload').trigger('click');
 
     });
@@ -31,7 +31,7 @@ $(document).ready(function () {
      * Click Remove All button to remove already uploaded files.
      */
     $("#RemoveBtn").click(function () {
-        $('#resource-link-button').show();
+        $('#LinkBtn').show();
         $('#fileUpload').val('');
         $('#fileNameMessage').show();
         fileList = [];
@@ -65,7 +65,7 @@ $(document).ready(function () {
 
         }
         checkFileSizes();
-        $('#resource-link-button').hide();
+        $('#LinkBtn').hide();
         $('#RemoveBtn').show();
     });
 
@@ -74,7 +74,7 @@ $(document).ready(function () {
     /**
      *  No file upload, add a link instead of a data file
      */
-    $('#resource-link-button').click(function () {
+    $('#LinkBtn').click(function () {
         $('#RemoveBtn').hide();
         $('.upload-related-parts').hide();
         $('#urlBox').show();
@@ -103,7 +103,7 @@ $(document).ready(function () {
             if ($('.file-row').length === 0) {
                 forbiddenLimit = false;
                 $('#file-danger-size').hide();
-                $('#resource-upload-button').click();
+                $('#UpBtn').click();
             }
             else {
                 checkFileSizes();
@@ -130,22 +130,18 @@ $(document).ready(function () {
     /**
      * clicks on the Add button
      */
-    $('button[name="msave"]').click(function (event) {
-        event.preventDefault(); // Prevent the default form submission initially
+    $('button[name="Csave"]').click(function () {
         var sBtn = $(this).val();
-
-        if (sBtn === "go-dataset") {
-            // Previous step (dataset metadata page)
+        if ($(this).val() === "go-dataset") {
+            // previous step (dataset metadat page)
             previous("go-dataset");
-            return;
+            return 0;
         }
-
         if ($('#urlBox:visible').length !== 0 && LinkValidity()) {
             // Link upload (not file)
             uploadLink(sBtn);
-            return;
+            return 0;
         }
-
         if (fileValidity()) {
             $('#cancel_waiting').hide();
             $('.modal-title').show();
@@ -159,29 +155,25 @@ $(document).ready(function () {
                 show: true
             });
             for (var i = 0; i < fileList.length; i++) {
-                // Upload a file
+                // upload a file
                 uploadFiles(fileList[i], sBtn, fileList.length);
             }
-        } else {
+        }
+        else {
             if (forbiddenLimit) {
-                // Passed the size limit
+                // passed the size limit
                 $('#file-danger-size').show();
-            } else {
-                // No file is selected            
-                // $('#file-danger').show();
-                // setTimeout(function () {
-                //     $('#file-danger').hide();
-                // }, 10000);
-                // Submit the form if none of the conditions are met
-                // $(this).closest('form').submit(); // Submit the form
+            }
+            else {
+                // no file is selected            
+                $('#file-danger').show();
+                setTimeout(function () {
+                    $('#file-danger').hide();
+                }, 10000);
             }
         }
-
-        // // Submit the form if none of the conditions are met
-        // if ($('#urlBox:visible').length === 0 && !fileValidity()) {
-        //     $(this).closest('form').submit(); // Submit the form
-        // }
     });
+
 
     /**
      * Close the progress modal pop up
@@ -289,6 +281,7 @@ function uploadLink(action) {
     // add csrf token
     var csrf_value = $('meta[name=_csrf_token]').attr('content')
     formdata.append('_csrf_token', csrf_value);
+
     var req = new XMLHttpRequest();
     req.onreadystatechange = function () {
         if (req.readyState == XMLHttpRequest.DONE && req.status === 200) {

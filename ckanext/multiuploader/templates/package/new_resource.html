@@ -1,8 +1,15 @@
-{% ckan_extends %}
-{% asset 'ckanext-multiuploader/my-css' %}
-{% asset 'ckanext-multiuploader/my-js' %}
+{% extends "package/new_resource_not_draft.html" %}
 
-{% block form %}
+{% block content_primary_nav %}
 {{ super() }}
-admaj
+{{ h.build_nav_icon('multiuploader.resource_view', _('Multi Upload'), id=pkg.name, icon='upload') }}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Replace the button with id "replace-button" after the content is loaded
+        const link = document.querySelector('.nav-tabs a[href="#"]');
+        if (link) {
+            link.href = "{{ h.url_for(dataset_type ~ '_resource.new', id = pkg_name) }}"
+        }; // Replace with your desired URL
+    });
+</script>
 {% endblock %}
