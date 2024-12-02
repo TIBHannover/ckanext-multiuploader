@@ -1,5 +1,5 @@
 /**
- * The code is responsilbe for handling a file upload process with drag and drop.
+ * The code is responsible for handling a file upload process with drag and drop.
  * 
  * Author: p.oladazimi 
  */
@@ -7,7 +7,6 @@
 var uploadReqs = [];
 var fileList = [];
 var dest_url = $('#dest_url').val();
-var test_test = "";
 var uploadPercent = 0;
 var forbiddenLimit = false;
 var already_uploaded_count = 0;
@@ -15,104 +14,77 @@ var uploadMaxLimit = parseInt($('#upload_limit').val());
 if (uploadMaxLimit === 0) {
     uploadMaxLimit = parseFloat($('#upload_limit').val());
 }
+
 $(document).ready(function () {
-
-
-    /**
-     * click the upload/remove button
-     */
+    // Click the upload button
     $('#UpBtn').on('click', function () {
         $('#fileUpload').trigger('click');
-
     });
 
-
-    /**
-     * Click Remove All button to remove already uploaded files.
-     */
+    // Click Remove All button to remove uploaded files.
     $("#RemoveBtn").click(function () {
         $('#fileUpload').val('');
         $('#fileNameMessage').show();
         fileList = [];
         emptyFiles();
-        $(this).hide();
+        $(this).addClass("d-none");
         $('#file-danger-size').hide();
         $('#file-danger').hide();
     });
 
-
-    /**
-     *  triggers when the user adds a new file(s)
-     */
+    // Triggers when the user adds new file(s)
     $("#fileUpload").change(function () {
-        var files = $("#fileUpload")[0].files;
-        emptyFiles();
+        var files = $("#fileUpload")[0].files; // Get the file list
+        emptyFiles(); // Clear any previous entries
+        fileList = []; // Reset fileList
+
         for (var i = 0; i < files.length; i++) {
             fileList.push(files[i]);
         }
+
         var filesBox = $('#fileNames');
         $('#fileNameMessage').hide();
-        let elem = "<div class='row file-row'><div class='col-sm-12'><span>First</span><span class='size-alert-span' id='SIZE_ALERT_ID'>Second</span></div></div>";
         for (var i = 0; i < fileList.length; i++) {
-            elem = elem.replace('First', "<div class='fileItem' id='ID'>FILE  <i class='fa fa-close'></i></div>");
-            elem = elem.replace('Second', "<div class='size-alert'><p>File too big!</p></div>");
-            elem = elem.replace('ID', i);
-            elem = elem.replace('SIZE_ALERT_ID', 'size-alert-id-' + i);
-            elem = elem.replace('FILE', fileList[i].name);
-            filesBox.append(elem);
-            elem = "<div class='row file-row'><div class='col-sm-12'><span>First</span><span class='size-alert-span' id='SIZE_ALERT_ID'>Second</span></div></div>";
-
+            const file = fileList[i];
+            const sizeInMB = (file.size / 1e6).toFixed(2); // Size in GB, formatted to 2 decimal points
+            // Create alert element for each file
+            const elem = `
+                <div class="alert alert-dark alert-dismissible fade show" role="alert">
+                    <span class="fileItem" id="${i}">${file.name} (${sizeInMB} MB)</span>
+                    <span class="size-alert-span" id="size-alert-id-${i}">
+                        <div class="size-alert"><p>File too big!</p></div>
+                    </span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>`;
+            filesBox.append(elem); // Append the alert to the file names box
         }
-        checkFileSizes();
-        $('#RemoveBtn').css('display', 'inline');
+        checkFileSizes(); // Check file sizes
+        $('#RemoveBtn').removeClass("d-none"); // Show the remove button
     });
 
-    /**
-     * delete an already added file 
-     */
-    $(document).on('click', '.file-row', function (e) {
-        if ($(e.target).is('i')) {
-            let idx = parseInt($(this).find('.fileItem').eq(0).attr('id'));
-            fileList.splice(idx, 1);
-            $(this).remove();
-            if ($('.file-row').length === 0) {
-                forbiddenLimit = false;
-                $('#file-danger-size').hide();
-                $('#UpBtn').click();
-            }
-            else {
-                checkFileSizes();
-                if (!forbiddenLimit) {
-                    $('#file-danger-size').hide();
-                }
-                $("#fileUpload")[0].value = '';
-                $('#fileUpload').trigger("change");
-            }
-        }
-
-    });
-
-
-    /**
-     * stop the default CKAN form submitting 
-     */
-    $("#resource-edit").bind('submit', function (e) {
+    // Prevent the default CKAN form submission 
+    $("#resource-edit").on('submit', function (e) {
         e.preventDefault();
-        return false;
-    });
-
-
-    /**
-     * clicks on the Add button
-     */
-    $('button[name="Csave"]').click(function () {
         var sBtn = $(this).val();
         if ($(this).val() === "go-dataset") {
             // previous step (dataset metadat page)
             previous("go-dataset");
             return 0;
         }
-        if (fileValidity()) {
+        // Prepare an array for valid files
+        let validFiles = [];
+        let anyFileTooBig = false;
+
+        $('#fileNames .alert').each(function () {
+            let fileId = $(this).find('.fileItem').attr('id'); // Get the id from the alert
+            if ($('#size-alert-id-' + fileId).is(':visible')) {
+                anyFileTooBig = true; // Set the flag if any file is too big
+            } else {
+                validFiles.push(fileList[fileId]); // Collect valid files
+            }
+        });
+
+        if (validFiles.length > 0 && !anyFileTooBig) {
             $('#cancel_waiting').hide();
             $('.modal-title').show();
             $('#upload-cancel').show();
@@ -122,11 +94,11 @@ $(document).ready(function () {
             $('#progress-modal').modal({
                 backdrop: 'static',
                 keyboard: false,
-                show: true
             });
-            for (var i = 0; i < fileList.length; i++) {
-                // upload a file
-                uploadFiles(fileList[i], sBtn, fileList.length);
+            $('#progress-modal').modal('show'); // Show the modal
+            for (var i = 0; i < validFiles.length; i++) {
+                // Upload only valid files
+                uploadFiles(validFiles[i], sBtn, validFiles.length);
             }
         }
         else {
@@ -144,29 +116,20 @@ $(document).ready(function () {
         }
     });
 
-
-    /**
-     * Close the progress modal pop up
-     */
+    // Close the progress modal pop up
     $('#upload-progress-modal-close').click(function () {
         location.reload();
         return false;
     });
 
-
-    /**
-     * Cancel an ongoing upload
-     */
+    // Cancel an ongoing upload
     $('#upload-cancel').click(function () {
         cancelAlreadyUploaded();
     });
-
-
 });
 
-
 /**
- * update the progress bar with upload percentage
+ * Update the progress bar with upload percentage
  * @param {*} percent 
  */
 function updateProgressBar(percent) {
@@ -175,24 +138,24 @@ function updateProgressBar(percent) {
     $('#upload-progress-bar').html(percent + '%');
 }
 
-
 /**
- * check the files size to be less than upload limit
+ * Check the files size to be less than upload limit
  */
 function checkFileSizes() {
     forbiddenLimit = false;
-    for (var i = 0; i < fileList.length; i++) {
-        fileSize = fileList[i].size / 1000000000; // Size in GB
+    $('#fileNames .alert').each(function (index) {
+        let fileSize = fileList[index].size / 1e9; // Size in GB
         if (fileSize > uploadMaxLimit) {
             forbiddenLimit = true;
-            $('#size-alert-id-' + i).show();
+            $('#size-alert-id-' + index).show(); // Use file name to identify
+        } else {
+            $('#size-alert-id-' + index).hide();
         }
-    }
+    });
 }
 
 /**
- * Upload a file to server
- * 
+ * Upload a file to the server
  */
 function uploadFiles(file, action, Max) {
     var formdata = new FormData();
@@ -204,37 +167,36 @@ function uploadFiles(file, action, Max) {
     formdata.set('save', action);
     formdata.set('id', $('#id').val());
     formdata.set('description', $('#field-description').val());
-    // add csrf token
-    var csrf_value = $('meta[name=_csrf_token]').attr('content')
+    var csrf_value = $('meta[name=_csrf_token]').attr('content');
     formdata.append('_csrf_token', csrf_value);
 
     var oldProgress = 0;
     reqUpload.upload.addEventListener('progress', function (e) {
         let progress = (Math.ceil(e.loaded / (e.total * 1.1) * 100) / Max);
-        uploadPercent += (progress - oldProgress)
+        uploadPercent += (progress - oldProgress);
         updateProgressBar(uploadPercent);
-        oldProgress = progress
+        oldProgress = progress;
     }, false);
-    reqUpload.onreadystatechange = function () {
-        if (reqUpload.readyState == XMLHttpRequest.DONE && reqUpload.status === 200) {
-            already_uploaded_count += 1;
-            if (already_uploaded_count === Max) {
-                updateProgressBar(100);
-                window.location.replace(this.responseText);
-            }
 
-        }
-        else if (reqUpload.readyState == XMLHttpRequest.DONE && reqUpload.status !== 200) {
-            $('#progress-bar-container').hide();
-            $('#upload-error-container').show();
-            $('#upload-progress-modal-close').show();
+    reqUpload.onreadystatechange = function () {
+        if (reqUpload.readyState == XMLHttpRequest.DONE) {
+            if (reqUpload.status === 200) {
+                already_uploaded_count += 1;
+                if (already_uploaded_count === Max) {
+                    updateProgressBar(100);
+                    window.location.replace(this.responseText);
+                }
+            } else {
+                $('#progress-bar-container').hide();
+                $('#upload-error-container').show();
+                $('#upload-progress-modal-close').show();
+            }
         }
     }
-    reqUpload.open("POST", dest_url)
-    reqUpload.send(formdata)
-    return 0;
-}
 
+    reqUpload.open("POST", dest_url);
+    reqUpload.send(formdata);
+}
 
 /**
  * Cancel uploaded files
@@ -243,74 +205,44 @@ function cancelAlreadyUploaded() {
     $('#cancel_waiting').show();
     $('#progress-bar-container').hide();
     $('.modal-title').hide();
-    for (let i = 0; i < uploadReqs.length; i++) {
-        uploadReqs[i].abort();
-        $('#upload-error-container').hide();
-        $('#upload-progress-modal-close').hide();
-        $('#upload-cancel').hide();
+    for (let req of uploadReqs) {
+        req.abort();
     }
-    let filenames = [];
-    for (let i = 0; i < fileList.length; i++) {
-        filenames.push(fileList[i].name);
-    }
+    $('#upload-error-container').hide();
+    $('#upload-progress-modal-close').hide();
+    $('#upload-cancel').hide();
+
     already_uploaded_count = 0;
     uploadPercent = 0;
+    let filenames = fileList.map(file => file.name);
     var formdata = new FormData();
-    let dest_url = $('#cancel_upload_url').val();
+    let cancel_url = $('#cancel_upload_url').val();
     formdata.set('pck_id', $('#pck_id').val());
     formdata.set('filenames', filenames);
+
     var req = new XMLHttpRequest();
     req.onreadystatechange = function () {
         if (req.readyState == XMLHttpRequest.DONE && req.status === 200) {
             $('#progress-modal').modal('hide');
         }
     }
-    req.open("POST", dest_url)
-    req.send(formdata)
-    return 1;
+
+    req.open("POST", cancel_url);
+    req.send(formdata);
 }
 
-
-
 /**
- * 
- * when click the previous button (deprecated)
- */
-function previous(action) {
-    var formdata = new FormData();
-    formdata.set('save', action);
-    formdata.set('pck_id', $('#pck_id').val());
-    var req = new XMLHttpRequest();
-    req.onreadystatechange = function () {
-        if (req.readyState == XMLHttpRequest.DONE && req.status === 200) {
-            window.location.replace(this.responseText);
-        }
-    }
-    req.open("POST", dest_url)
-    req.send(formdata)
-    return 0;
-}
-
-
-/**
- * file validity check
+ * File validity check
  * @returns 
  */
 function fileValidity() {
-    if (fileList.length !== 0 && !forbiddenLimit) {
-        return true;
-    }
-    return false
+    return fileList.length !== 0 && !forbiddenLimit;
 }
 
-
 /**
- * empty the File box list
+ * Empty the File box list
  */
 function emptyFiles() {
     forbiddenLimit = false;
-    let items = $('.file-row');
-    for (var i = 0; i < items.length; i++) {
-        items[i].remove();
-    }
+    $('#fileNames .alert').remove(); // Remove only alerts within the fileNames container
 }

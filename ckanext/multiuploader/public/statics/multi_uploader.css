@@ -49,12 +49,7 @@
 }
 
 .fileItem {
-    background-color: #EBEBEB;
     display: inline-block;
-    clear: both;
-    float: left;
-    padding: 5px;
-    margin-bottom: 10px;
 }
 
 #fileNameMessage {
@@ -103,12 +98,8 @@
 .size-alert {
     background-color: red;
     color: white;
-    display: inline-block;
     border-radius: 15px;
-    width: 100px;
     text-align: center;
-    height: 20px;
-    margin-left: 5px;
 }
 
 .size-alert-span {
@@ -125,7 +116,7 @@
 }
 
 #upload-progress-modal-close {
-    display: none;
+    /* display: none; */
     background-color: red;
     color: white;
 }
@@ -133,8 +124,6 @@
 #RemoveBtn {
     background-color: red;
     color: white;
-    width: 110px;
-    display: none;
 }
 
 #cancel_waiting {

@@ -12,6 +12,15 @@
 <input type="hidden" value="{{action}}" id="dest_url">
 <input type="hidden" value="{{cancelUrl}}" id="cancel_upload_url">
 
+{{ form.errors(error_summary) }}
+<div class="alert alert-danger" id="file-danger">
+    {{_('You need to upload file(s)' )}}
+</div>
+<div class="alert alert-danger" id="file-danger-size">
+    {{_('Please check your file(s) size. Each file has to be less than ' ) + h.get_max_upload_size() + ' GB'}}
+</div>
+{% snippet 'multiuploader/snippets/progress_bar_modal.html' %}
+
 <form id="resource-edit" class="dataset-form dataset-resource-form" method="post" action=""
     data-module="basic-form resource-form" enctype="multipart/form-data">
     {{ h.csrf_input() if 'csrf_input' in h }}
@@ -21,21 +30,12 @@
     {{ h.snippet('package/snippets/stages.html', stages=stage, pkg_name=pkg_name) }}
     {% endif %}
     {% endblock %}
-
-    {% block errors %}{{ form.errors(error_summary) }}{% endblock %}
     <input id="id" value="{{ data.id }}" type="hidden" />
     <input id="pck_id" value="{{ pkg_name }}" type="hidden" />
-    {% snippet 'multiuploader/snippets/progress_bar_modal.html' %}
+    <input type="hidden" id="upload_limit" value={{h.get_max_upload_size()}}>
 
     {% block basic_fields %}
     {% block basic_fields_url %}
-    <input type="hidden" id="upload_limit" value={{h.get_max_upload_size()}}>
-    <div class="alert alert-danger" id="file-danger">
-        {{_('You need to upload file(s)' )}}
-    </div>
-    <div class="alert alert-danger" id="file-danger-size">
-        {{_('Please check your file(s) size. Each file has to be less than ' ) + h.get_max_upload_size() + ' GB'}}
-    </div>
     <div class="select-type">
         <label id="resource-menu-label" class="form-label">{{ menu_label or _('Data') }}</label>
         <div role="group" aria-labelledby="resource-menu-label">
@@ -43,19 +43,21 @@
                 aria-label="{{ _('Upload files on your computer') }}"
                 data-bs-title="{{ _('Upload files on your computer') }}" data-bs-toggle="tooltip" autofocus="true"><i
                     class="fa fa-cloud-upload"></i>{{ _("Upload files") }}</button>
-            <button type="button" class="btn btn-default" id="RemoveBtn">{{_('Remove All')}}</button>
+            <button type="button" class="btn btn-default d-none" id="RemoveBtn"
+                aria-label="{{ _('Remove selected files') }}" data-bs-title="{{ _('Remove selected files') }}"
+                data-bs-toggle="tooltip" autofocus="true"><i class="fa fa-trash"></i>{{_('Remove All')}}</button>
         </div>
     </div>
     <input type="file" name="urls[]" multiple="multiple" id="fileUpload">
     {% endblock %}
-    <div class="alert alert-warning upload-related-parts" id="file-size-info-box">
+    <div class="alert alert-warning upload-related-parts mt-3" id="file-size-info-box">
         <p>
             {{_('Please note: Maximum size for a single file is limited to ') + h.get_max_upload_size() + ' GB.'}}
         </p>
     </div>
     {% block basic_fields_name %}
 
-    <div id="fileNameBox" class="upload-related-parts">
+    <div id="fileNameBox" class="form-group control-full upload-related-parts">
         <label for="fileNames">{{_('Files')}}</label>
         <div class="row" id="fileNames">
             <div id="fileNameMessage">
@@ -63,7 +65,6 @@
                 {{_('Drop file(s) here or use the Upload button')}}
             </div>
         </div>
-        <br><br>
     </div>
     {% endblock %}
     {% block basic_fields_description %}
