@@ -1,29 +1,31 @@
-#fileUpload{
+#fileUpload {
     display: none;
 }
+
 .fakebtn,
 .fakebtn:hover,
 .fakebtn:active:focus,
-.fakebtn:focus
-{
+.fakebtn:focus {
     width: 80px;
-    background-color: white ;
-    color: black ;
-    font-size: 14px ;
-    border-color: gray ;
+    background-color: white;
+    color: black;
+    font-size: 14px;
+    border-color: gray;
 
 }
-#dataTitle{
+
+#dataTitle {
     color: black;
     font-size: 15px;
     font-weight: bold;
 }
-#urlBox{
+
+#urlBox {
     display: none;
-    position: relative;    
+    position: relative;
 }
 
-#urlRemove{
+#urlRemove {
     background-color: red;
     color: white;
     position: absolute;
@@ -35,7 +37,7 @@
     padding: 5px 15px;
 }
 
-#fileNames{
+#fileNames {
     border: #EBEBEB 2px solid;
     border-radius: 3px;
     width: 100%;
@@ -45,24 +47,23 @@
     overflow-y: auto;
     position: relative;
 }
-.fileItem{
-    background-color: #EBEBEB;
+
+.fileItem {
     display: inline-block;
-    clear:both;
-    float:left;
-    padding: 5px;
-    margin-bottom: 10px;
 }
-#fileNameMessage{
-    position:absolute;
+
+#fileNameMessage {
+    position: absolute;
     left: 50%;
-    top:50%;
+    top: 50%;
     font-style: italic;
     color: #9A9A9A;
     width: 40%;
-    transform: translate(-50%,-50%);
+    transform: translate(-50%, -50%);
 }
-#file-danger, #file-danger-size{
+
+#file-danger,
+#file-danger-size {
     display: none;
 }
 
@@ -75,67 +76,61 @@
     top: 25%;
 }
 
-.progress > div {
-      background-color: rgb(17, 168, 17);
-      animation: progress-bar-stripes 1s linear infinite;
-      animation-name: progress-bar-stripes;
-      animation-duration: 1s;
-      animation-timing-function: linear;
-      animation-delay: 0s;
-      animation-iteration-count: infinite;
-      animation-direction: normal;
-      animation-fill-mode: none;
-      animation-play-state: running;
-      width: 100%;
-      color: black;
+.progress>div {
+    background-color: rgb(17, 168, 17);
+    animation: progress-bar-stripes 1s linear infinite;
+    animation-name: progress-bar-stripes;
+    animation-duration: 1s;
+    animation-timing-function: linear;
+    animation-delay: 0s;
+    animation-iteration-count: infinite;
+    animation-direction: normal;
+    animation-fill-mode: none;
+    animation-play-state: running;
+    width: 100%;
+    color: black;
 }
 
-#upload-progress-bar{
+#upload-progress-bar {
     width: 1%;
 }
 
-.size-alert{
+.size-alert {
     background-color: red;
     color: white;
-    display: inline-block;
     border-radius: 15px;
-    width: 100px;
     text-align: center;
-    height: 20px;
-    margin-left: 5px;
 }
 
-.size-alert-span{
+.size-alert-span {
     display: none;
 }
 
-#upload-error-container{
+#upload-error-container {
     text-align: center;
     display: none;
 }
 
-#upload-error-container > p{
+#upload-error-container>p {
     font-size: 20px;
 }
 
-#upload-progress-modal-close{
-    display: none;
+#upload-progress-modal-close {
+    /* display: none; */
     background-color: red;
     color: white;
 }
 
-#RemoveBtn{
+#RemoveBtn {
     background-color: red;
     color: white;
-    width: 110px;
+}
+
+#cancel_waiting {
     display: none;
 }
 
-#cancel_waiting{
-    display: none;
-}
-
-#upload-cancel-sign{
+#upload-cancel-sign {
     font-size: 20px;
-    
+
 }

@@ -1,7 +1,19 @@
 {% ckan_extends %}
 
+{% block content_primary_nav %}
+{{ super() }}
+{{ h.build_nav_icon('multiuploader.resource_view', _('Multi Upload'), id=pkg.name, icon='upload') }}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Replace the button with id "replace-button" after the content is loaded
+        const link = document.querySelector('.nav-tabs a[href="#"]');
+        if (link) {
+            link.href = "{{ h.url_for(dataset_type ~ '_resource.new', id = pkg_name) }}"
+        }; // Replace with your desired URL
+    });
+</script>
+{% endblock %}
 
 {% block form %}
-    {% snippet 'snippets/new_resource_form.html', 
-    data=data, pkg_dict=pkg_dict, errors=errors, error_summary=error_summary, include_metadata=false, pkg_name=pkg_name, stage=stage, dataset_type=dataset_type %}
-{% endblock form %} 
+{{ super() }}
+{% endblock %}

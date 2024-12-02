@@ -3,7 +3,7 @@
 import ckan.plugins as plugins
 import ckan.plugins.toolkit as toolkit
 from ckanext.multiuploader.controllers import UploadController
-from flask import Blueprint
+from ckanext.multiuploader import views
 
 
 class MultiuploaderPlugin(plugins.SingletonPlugin):
@@ -14,38 +14,20 @@ class MultiuploaderPlugin(plugins.SingletonPlugin):
     # IConfigurer
 
     def update_config(self, config_):
-        toolkit.add_template_directory(config_, 'templates')
-        toolkit.add_public_directory(config_, 'public')
-        toolkit.add_resource('fanstatic', 'multiuploader')
-        toolkit.add_resource('public/statics', 'ckanext-multiuploader')
-        
+        toolkit.add_template_directory(config_, "templates")
+        toolkit.add_public_directory(config_, "public")
+        toolkit.add_resource("fanstatic", "multiuploader")
+        toolkit.add_resource("public/statics", "ckanext-multiuploader")
 
-    #plugin Blueprint
+    # IBlueprint
 
     def get_blueprint(self):
+        return views.get_blueprint()
 
-        blueprint = Blueprint(self.name, self.__module__)
-        blueprint.template_folder = u'templates'
-        blueprint.add_url_rule(
-            u'/multiuploader/upload_resources',
-            u'upload_resources',
-            UploadController.upload_resources,
-            methods=['POST']
-            )
-        
-        blueprint.add_url_rule(
-            u'/multiuploader/delete_uploaded_resources',
-            u'delete_uploaded_resources',
-            UploadController.delete_uploaded_resources,
-            methods=['POST']
-            )
-
-        return blueprint
-    
-    #ITemplateHelpers
+    # ITemplateHelpers
 
     def get_helpers(self):
-        return {'cancel_dataset_is_enabled': UploadController.cancel_dataset_plugin_is_enabled, 
-            'get_max_upload_size': UploadController.get_upload_limit,
-            'which_sfb_multiuploader': UploadController.which_sfb_multiuploader
+        return {
+            "cancel_dataset_is_enabled": UploadController.cancel_dataset_plugin_is_enabled,
+            "get_max_upload_size": UploadController.get_upload_limit,
         }
