@@ -62,11 +62,16 @@ jobs:
         # Replace default path to CKAN core config file with the one on the container
         sed -i -e 's/use = config:.*/use = config:\/srv\/app\/src\/ckan\/test-core.ini/' test.ini
 
+
+    - name: Install curl
+      run: apt-get update && apt-get install -y curl
+
     - name: Check Solr schema version
       run: curl -s "http://solr:8983/solr/ckan/admin/file?file=schema.xml"
 
     - name: Fetch Solr logs
       run: docker logs $(docker ps -qf "ancestor=ckan/ckan-solr:${{ matrix.ckan-version }}-solr9") || true
+
 
     - name: Setup extension
       continue-on-error: ${{ matrix.experimental }}
