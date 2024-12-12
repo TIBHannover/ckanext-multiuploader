@@ -23,7 +23,7 @@ jobs:
       options: --user root
     services:
       solr:
-        image: ckan/ckan-solr:${{ matrix.ckan-version }}-solr9
+        image: ckan/ckan-solr:${{ matrix.ckan-version }}-solr8
       postgres:
         image: ckan/ckan-postgres-dev:${{ matrix.ckan-version }}
         env:
