@@ -1,22 +1,33 @@
 name: Tests
-on: [push, pull_request, workflow_dispatch]
+on: 
+  push:
+  pull_request:
+  workflow_dispatch:
+
 jobs:
   test:
+    strategy:
+      matrix:
+        include: #ckan-image see https://github.com/ckan/ckan-docker-base, ckan-version controls other image tags
+          - ckan-version: "2.9"
+            ckan-image: "2.9-py3.9"
+            experimental: false
+
     runs-on: ubuntu-latest
     container:
-      # The CKAN version tag of the Solr and Postgres containers should match
-      # the one of the container the tests run on.
-      # You can switch this base image with a custom image tailored to your project
-      image: openknowledge/ckan-dev:2.9
+      image: ckan/ckan-dev:${{ matrix.ckan-image }}
+      options: --user root
     services:
       solr:
-        image: ckan/ckan-solr:2.9-solr9
+        image: ckan/ckan-solr:${{ matrix.ckan-version }}-solr9
       postgres:
-        image: ckan/ckan-postgres-dev:2.9
+        image: ckan/ckan-postgres-dev:${{ matrix.ckan-version }}
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
           POSTGRES_DB: postgres
+        ports:
+          - 5432:5432
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
       redis:
           image: redis:3
@@ -30,19 +41,29 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+      continue-on-error: ${{ matrix.experimental }}
+
+    - name: Pin setuptools for ckan 2.9 only
+      if: ${{ matrix.ckan-version == 2.9 }}
+      run: pip install "setuptools>=44.1.0,<71"
+      continue-on-error: ${{ matrix.experimental }}
+
     - name: Install requirements
       # Install any extra requirements your extension has here (dev requirements, other extensions etc)
       run: |
         pip install -r requirements.txt
         pip install -r dev-requirements.txt
         pip install -e .
-    - name: Setup extension
-      # Extra initialization steps
-      run: |
+        pip install -U requests[security]
         # Replace default path to CKAN core config file with the one on the container
         sed -i -e 's/use = config:.*/use = config:\/srv\/app\/src\/ckan\/test-core.ini/' test.ini
 
+    - name: Setup extension
+      continue-on-error: ${{ matrix.experimental }}
+      run: |
         ckan -c test.ini db init
+
     - name: Run tests
-      run: pytest --ckan-ini=test.ini --cov=ckanext.multiuploader --disable-warnings ckanext/multiuploader
+      continue-on-error: ${{ matrix.experimental }}
+      run: pytest --ckan-ini=test.ini --cov=ckanext.multiuploader --disable-warnings ckanext/multiuploader --junit-xml=/tmp/artifacts/junit/results.xml
 
