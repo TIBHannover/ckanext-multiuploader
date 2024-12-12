@@ -71,8 +71,13 @@ jobs:
     - name: Install curl
       run: apt-get update && apt-get install -y curl
 
-    - name: Check Solr schema version
-      run: curl -s "http://solr:8983/solr/ckan/admin/file?file=schema.xml"
+    - name: Check Solr
+      run: |
+        echo "Checking Solr core status..."
+        curl -f http://solr:8983/solr/admin/cores?action=STATUS || echo "Solr core status failed"
+        echo "Checking schema.xml..."
+        curl -f -s "http://solr:8983/solr/ckan/admin/file?file=schema.xml" || echo "schema.xml not found"
+
 
     - name: Fetch Solr logs
       run: docker logs $(docker ps -qf "ancestor=ckan/ckan-solr:${{ matrix.ckan-version }}-solr9") || true
