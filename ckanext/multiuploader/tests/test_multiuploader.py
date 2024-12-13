@@ -120,7 +120,7 @@ class TestUpload(object):
         dataset = factories.Dataset(owner_org=owner_org['id'])               
         self.resource_data['pck_id'] = dataset['id']
         self.resource_data['save'] = "go-dataset-complete"                             
-        auth = {u"Authorization": self.sysadmin_tokenz}
+        auth = {u"Authorization": self.sysadmin_token}
         response = app.post(self.upload_url, data=self.resource_data , extra_environ=auth)           
         assert response.status_code == 200
         assert "/dataset/" in response.body
