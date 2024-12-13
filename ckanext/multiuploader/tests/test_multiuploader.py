@@ -60,7 +60,7 @@ class TestUpload(object):
         '''
                
         owner_org = factories.Organization(users=[{
-            'name': self.sysadmin_user.id,
+            'name': self.sysadmin_user['id'],
             'capacity': 'member'
         }])
         dataset = factories.Dataset(owner_org=owner_org['id'])       
@@ -80,7 +80,7 @@ class TestUpload(object):
         '''
                
         owner_org = factories.Organization(users=[{
-            'name': self.sysadmin_user.id,
+            'name': self.sysadmin_user['id'],
             'capacity': 'member'
         }])                                         
         auth = {u"Authorization": self.sysadmin_token}
@@ -95,7 +95,7 @@ class TestUpload(object):
         '''
                
         owner_org = factories.Organization(users=[{
-            'name': self.sysadmin_user.id,
+            'name': self.sysadmin_user['id'],
             'capacity': 'member'
         }])
         dataset = factories.Dataset(owner_org=owner_org['id'])       
@@ -114,7 +114,7 @@ class TestUpload(object):
         '''
                
         owner_org = factories.Organization(users=[{
-            'name': self.sysadmin_user.id,
+            'name': self.sysadmin_user['id'],
             'capacity': 'member'
         }])
         dataset = factories.Dataset(owner_org=owner_org['id'])               
