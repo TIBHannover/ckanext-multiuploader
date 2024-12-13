@@ -23,7 +23,10 @@ class TestUpload(object):
     @pytest.fixture(autouse=True)
     def intial(self, clean_db, clean_index):
         ctd.CreateTestData.create()
-        self.sysadmin_user = model.User.get("testsysadmin")
+        #self.sysadmin_user = model.User.get("testsysadmin")
+        self.sysadmin_user = factories.Sysadmin()
+        self.sysadmin_token = factories.APIToken(user=self.sysadmin_user["id"])
+        self.sysadmin_token = self.sysadmin_token["token"]
         self.resource_data = {
             'isLink': 0,            
             'save': 'go-metadata',
@@ -64,7 +67,7 @@ class TestUpload(object):
         #with open(Path(__file__).resolve().parent / 'resources' / 'test.jpg', 'rb') as test:
          #   img = test.read()
         self.resource_data['pck_id'] = dataset['id']                             
-        auth = {u"Authorization": str(self.sysadmin_user.apikey)}
+        auth = {u"Authorization": self.sysadmin_token}
         response = app.post(self.upload_url, data=self.resource_data , extra_environ=auth)           
         assert response.status_code == 200
         assert "/dataset/" in response.body
@@ -80,7 +83,7 @@ class TestUpload(object):
             'name': self.sysadmin_user.id,
             'capacity': 'member'
         }])                                         
-        auth = {u"Authorization": str(self.sysadmin_user.apikey)}
+        auth = {u"Authorization": self.sysadmin_token}
         response = app.post(self.upload_url, data=self.resource_data , extra_environ=auth)           
         assert response.status_code == 400
         assert "missing data" in response.body
@@ -98,7 +101,7 @@ class TestUpload(object):
         dataset = factories.Dataset(owner_org=owner_org['id'])       
         self.resource_data['save'] = "go-dataset"
         self.resource_data['pck_id'] = dataset['id']                             
-        auth = {u"Authorization": str(self.sysadmin_user.apikey)}
+        auth = {u"Authorization": self.sysadmin_token}
         response = app.post(self.upload_url, data=self.resource_data , extra_environ=auth)           
         assert response.status_code == 200
         assert "/dataset/edit" in response.body
@@ -117,7 +120,7 @@ class TestUpload(object):
         dataset = factories.Dataset(owner_org=owner_org['id'])               
         self.resource_data['pck_id'] = dataset['id']
         self.resource_data['save'] = "go-dataset-complete"                             
-        auth = {u"Authorization": str(self.sysadmin_user.apikey)}
+        auth = {u"Authorization": self.sysadmin_tokenz}
         response = app.post(self.upload_url, data=self.resource_data , extra_environ=auth)           
         assert response.status_code == 200
         assert "/dataset/" in response.body
