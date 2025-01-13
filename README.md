@@ -1,3 +1,5 @@
+[![CI](https://github.com/TIBHannover/ckanext-multiuploader/actions/workflows/test.yml/badge.svg)](https://github.com/TIBHannover/ckanext-multiuploader/actions/workflows/test.yml)
+
 # ckanext-multiuploader
 
 This CKAN extension helps users to upload multiple resources at once with drag&drop. 
