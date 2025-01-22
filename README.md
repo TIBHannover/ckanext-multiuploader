@@ -41,14 +41,20 @@ To install ckanext-multiuploader:
 
         sudo service apache2 reload
 
-
-## Usage and Config
+## Config
 
 **Note**: you have to set the max resource size in ckan configuration (`/etc/ckan/default/ckan.ini`)
 
         ckan.max_resource_size
 
-
+## Usage
+### Add a dataset with the multiuploader user interface
+```
+Given an existing organization
+When I add a dataset and enter required data in step 1 "Create Dataset"
+And I click "Next: Add Data"
+Then I should see the alternate user interface of "multiuploader" in the "Add data" tab
+```
 
 ## Tests
 
