@@ -45,7 +45,7 @@ $(document).ready(function () {
     /**
      *  triggers when the user adds a new file(s)
      */
-    $("#fileUpload").change(function () {
+    $(document).on('change', '#fileUpload', function () {
         var files = $("#fileUpload")[0].files;
         emptyFiles();
         for (var i = 0; i < files.length; i++) {
