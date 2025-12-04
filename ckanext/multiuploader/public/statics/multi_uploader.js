@@ -46,10 +46,14 @@ $(document).ready(function () {
      *  triggers when the user adds a new file(s)
      */
     $(document).on('change', '#fileUpload', function () {
+        console.log("📁 [CHANGE] #fileUpload fired");
         var files = $("#fileUpload")[0].files;
+        console.log("📦 Files detected:", files.length);
         emptyFiles();
         for (var i = 0; i < files.length; i++) {
             fileList.push(files[i]);
+            console.log("➡️ Added file:", files[i].name, "size:", files[i].size);
+
         }
         var filesBox = $('#fileNames');
         $('#fileNameMessage').hide();
@@ -64,6 +68,8 @@ $(document).ready(function () {
             elem = "<div class='row file-row'><div class='col-sm-12'><span>First</span><span class='size-alert-span' id='SIZE_ALERT_ID'>Second</span></div></div>";
 
         }
+        console.log("📦 fileList length now:", fileList.length);
+
         checkFileSizes();
         $('#LinkBtn').hide();
         $('#RemoveBtn').show();
@@ -130,7 +136,12 @@ $(document).ready(function () {
     /**
      * clicks on the Add button
      */
+
     $('button[name="Csave"]').click(function () {
+    console.log("🟢 [SAVE BUTTON] Clicked:", $(this).val());
+    console.log("📦 fileList at click:", fileList.length);
+    console.log("⛔ forbiddenLimit:", forbiddenLimit);
+
         var sBtn = $(this).val();
         if ($(this).val() === "go-dataset") {
             // previous step (dataset metadat page)
@@ -225,6 +236,10 @@ function checkFileSizes() {
  * 
  */
 function uploadFiles(file, action, Max) {
+console.log("🚚 [UPLOAD] Started for:", file.name,
+            "| action:", action,
+            "| dest_url:", dest_url);
+
     var formdata = new FormData();
     let reqUpload = new XMLHttpRequest();
     uploadReqs.push(reqUpload);
@@ -246,20 +261,19 @@ function uploadFiles(file, action, Max) {
         oldProgress = progress
     }, false);
     reqUpload.onreadystatechange = function () {
-        if (reqUpload.readyState == XMLHttpRequest.DONE && reqUpload.status === 200) {
-            already_uploaded_count += 1;
-            if (already_uploaded_count === Max) {
-                updateProgressBar(100);
-                window.location.replace(this.responseText);
-            }
+        reqUpload.onreadystatechange = function () {
+    console.log("📡 [XHR] READY:", reqUpload.readyState,
+                "| STATUS:", reqUpload.status);
 
-        }
-        else if (reqUpload.readyState == XMLHttpRequest.DONE && reqUpload.status !== 200) {
-            $('#progress-bar-container').hide();
-            $('#upload-error-container').show();
-            $('#upload-progress-modal-close').show();
+    if (reqUpload.readyState == XMLHttpRequest.DONE) {
+        if (reqUpload.status === 200) {
+            console.log("✅ [UPLOAD SUCCESS] Response:", this.responseText);
+        } else {
+            console.log("❌ [UPLOAD FAILED]", reqUpload.status, this.responseText);
         }
     }
+};
+
     reqUpload.open("POST", dest_url)
     reqUpload.send(formdata)
     return 0;
@@ -350,11 +364,13 @@ function previous(action) {
  * @returns 
  */
 function fileValidity() {
-    if (fileList.length !== 0 && !forbiddenLimit) {
-        return true;
-    }
-    return false
+    const valid = (fileList.length !== 0 && !forbiddenLimit);
+    console.log("🔍 [fileValidity] valid:", valid,
+                "| fileList:", fileList.length,
+                "| forbiddenLimit:", forbiddenLimit);
+    return valid;
 }
+
 
 /**
  * Link added by the user or not
