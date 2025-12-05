@@ -255,10 +255,18 @@ console.log("🚚 [UPLOAD] Started for:", file.name,
 
     var oldProgress = 0;
     reqUpload.upload.addEventListener('progress', function (e) {
-        let progress = (Math.ceil(e.loaded / (e.total * 1.1) * 100) / Max);
-        uploadPercent += (progress - oldProgress)
+    // Changes by Bhavin Katabathuni:
+    // Progress calculation: removed incorrect division and buffer.
+    // Now the progress bar reflects the actual upload percentage and reaches 100%.
+
+        let perFile = 100 / Max;
+        let percent = perFile * (e.loaded / e.total) * 100;
+        uploadPercent += percent - oldProgress;
+        updateProgressBar(uploadPercent);
+        oldProgress = percent;
         updateProgressBar(uploadPercent);
         oldProgress = progress
+        console.log("📊 Upload progress:", Math.ceil(uploadPercent) + "%");
     }, false);
     reqUpload.onreadystatechange = function () {
     console.log("📡 [XHR] READY:", reqUpload.readyState,
