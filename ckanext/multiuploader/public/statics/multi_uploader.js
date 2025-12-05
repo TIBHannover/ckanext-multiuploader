@@ -424,4 +424,3 @@ $(document).ready(function () {
 
     });
 
-  });
