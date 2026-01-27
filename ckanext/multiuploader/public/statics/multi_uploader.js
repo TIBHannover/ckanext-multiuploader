@@ -10,6 +10,12 @@ let forbiddenLimit = false;
 let dest_url = null;
 let uploadMaxLimit = 0;
 
+let totalUploads = 0;
+let completedUploads = 0;
+let successUploads = 0;
+let anyUploadFailed = false;
+let didFinish = false;
+
 // Bootstrap 5 modal instance (created on demand)
 let progressModal = null;
 
@@ -170,6 +176,12 @@ $(document).ready(function () {
       uploadPercent = 0;
       updateProgressBar(0);
 
+      totalUploads = fileList.length;
+      completedUploads = 0;
+      successUploads = 0;
+      anyUploadFailed = false;
+      didFinish = false;
+
       // modal UI state
       $('#cancel_waiting').hide();
       $('.modal-title').show();
@@ -183,7 +195,7 @@ $(document).ready(function () {
       showProgressModal(); // ✅ Bootstrap 5 show
 
       for (let i = 0; i < fileList.length; i++) {
-        uploadFiles(fileList[i], sBtn, fileList.length);
+        uploadFiles(fileList[i], sBtn, totalUploads);
       }
     } else {
       if (forbiddenLimit) {
@@ -340,26 +352,35 @@ function uploadFiles(file, action, maxFiles) {
     console.log("📊 Upload progress:", Math.round(uploadPercent) + "%");
   }, false);
 
-  reqUpload.onreadystatechange = function () {
-    console.log("📡 [XHR] READY:", reqUpload.readyState, "| STATUS:", reqUpload.status);
+      reqUpload.onreadystatechange = function () {
+      if (reqUpload.readyState !== XMLHttpRequest.DONE) return;
 
-    if (reqUpload.readyState === XMLHttpRequest.DONE) {
+      completedUploads++;
+
       if (reqUpload.status === 200) {
-        console.log("✅ [UPLOAD SUCCESS] Response:", reqUpload.responseText);
-        // If you redirect on success, do it here; otherwise keep modal open
+        successUploads++;
       } else {
-        console.log("❌ [UPLOAD FAILED]", reqUpload.status, reqUpload.responseText);
+        anyUploadFailed = true;
 
         // show error UI in modal
         $('#upload-error-container').show();
         $('#progress-bar-container').hide();
         $('#upload-cancel').hide();
-
-        // leave Close button enabled so user can exit
         $('#upload-progress-modal-close').show();
       }
-    }
-  };
+
+      // When ALL uploads finished:
+      if (completedUploads === totalUploads && !didFinish) {
+        didFinish = true;
+
+        // Only auto-close if ALL were successful
+        if (!anyUploadFailed && successUploads === totalUploads) {
+          updateProgressBar(100);
+          hideProgressModal();   // Bootstrap 5 close
+          setTimeout(() => location.reload(), 400);     // refresh so “All Files” updates
+        }
+      }
+    };
 
   reqUpload.open("POST", dest_url);
   reqUpload.send(formdata);
