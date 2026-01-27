@@ -16,6 +16,9 @@ let successUploads = 0;
 let anyUploadFailed = false;
 let didFinish = false;
 
+let successRedirectUrl = null;
+
+
 // Bootstrap 5 modal instance (created on demand)
 let progressModal = null;
 
@@ -359,6 +362,11 @@ function uploadFiles(file, action, maxFiles) {
 
       if (reqUpload.status === 200) {
         successUploads++;
+
+        // Your backend likely returns a URL to go to next
+        if (reqUpload.responseText && reqUpload.responseText.startsWith('http')) {
+        successRedirectUrl = reqUpload.responseText.trim();
+            }
       } else {
         anyUploadFailed = true;
 
@@ -377,7 +385,14 @@ function uploadFiles(file, action, maxFiles) {
         if (!anyUploadFailed && successUploads === totalUploads) {
           updateProgressBar(100);
           hideProgressModal();   // Bootstrap 5 close
-          setTimeout(() => location.reload(), 400);     // refresh so “All Files” updates
+          // setTimeout(() => location.reload(), 400);     // refresh so “All Files” updates
+          if (successRedirectUrl) {
+            window.location.replace(successRedirectUrl);
+            } else {
+                // fallback if backend doesn't return URL
+            setTimeout(() => location.reload(), 400);
+            }
+            }
         }
       }
     };
