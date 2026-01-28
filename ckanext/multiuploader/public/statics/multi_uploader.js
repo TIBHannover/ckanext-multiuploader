@@ -6,6 +6,7 @@ let uploadReqs = [];
 let fileList = [];
 let uploadPercent = 0;
 let forbiddenLimit = false;
+let nextUrl = null;
 
 let dest_url = null;
 let uploadMaxLimit = 0;
@@ -359,6 +360,8 @@ function uploadFiles(file, action, maxFiles) {
 
       if (reqUpload.status === 200) {
         successUploads++;
+        const resp = (reqUpload.responseText || '').trim();
+        if (resp) nextUrl = resp;   // Python returns the URL
       } else {
         anyUploadFailed = true;
 
@@ -372,13 +375,18 @@ function uploadFiles(file, action, maxFiles) {
       // When ALL uploads finished:
       if (completedUploads === totalUploads && !didFinish) {
         didFinish = true;
-
         // Only auto-close if ALL were successful
         if (!anyUploadFailed && successUploads === totalUploads) {
           updateProgressBar(100);
-          hideProgressModal();   // Bootstrap 5 close
-          setTimeout(() => location.reload(), 400);     // refresh so “All Files” updates
+          hideProgressModal(); //Bootstrap 5 close
+
+        if (nextUrl) {
+            window.location.replace(nextUrl);   // go to dataset.read
+            } else {
+                location.reload();                  // fallback if server returned nothing
+            }
         }
+      }
       }
     };
 
@@ -435,7 +443,7 @@ function cancelAlreadyUploaded() {
   const cancelUrl = $('#cancel_upload_url').val();
 
   formdata.set('pck_id', $('#pck_id').val());
-  formdata.set('filenames', filenames);
+  formdata.set('filenames', JSON.stringify(filenames));
 
   const req = new XMLHttpRequest();
   req.onreadystatechange = function () {
