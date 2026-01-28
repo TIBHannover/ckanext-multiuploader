@@ -17,7 +17,7 @@ class UploadController():
 
                 elif action == "go-dataset-complete": # Add resource to an active dataset
                     Helper.add_resource(package_name, request, False, int(request.form['isLink']))                
-                    return h.redirect_to('dataset.read', id=str(package_name) ,  _external=True)
+                    return h.url_for('dataset.read', id=str(package_name) ,  _external=True)
                 
                 else: # Add resource to a draft dataset
                     Helper.add_resource(package_name, request, True, int(request.form['isLink']))
