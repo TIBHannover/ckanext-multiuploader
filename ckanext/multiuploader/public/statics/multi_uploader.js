@@ -387,8 +387,7 @@ function uploadFiles(file, action, maxFiles) {
             }
         }
       }
-      }
-    };
+  };
 
   reqUpload.open("POST", dest_url);
   reqUpload.send(formdata);
