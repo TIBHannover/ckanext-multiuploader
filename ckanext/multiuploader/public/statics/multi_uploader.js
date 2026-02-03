@@ -187,12 +187,12 @@ $(document).ready(function () {
       $('#cancel_waiting').hide();
       $('.modal-title').show();
       $('#upload-cancel').show();
-      $('#upload-progress-modal-close').show();
+      $('#upload-progress-modal-close').addClass('d-none');
 
       $('#progress-bar-container').show();
       $('#upload-error-container').hide();
       $('#file-danger-size').hide();
-
+      console.log('MODAL SHOULD OPEN NOW');
       showProgressModal(); // ✅ Bootstrap 5 show
 
       for (let i = 0; i < fileList.length; i++) {
@@ -369,7 +369,7 @@ function uploadFiles(file, action, maxFiles) {
         $('#upload-error-container').show();
         $('#progress-bar-container').hide();
         $('#upload-cancel').hide();
-        $('#upload-progress-modal-close').show();
+        $('#upload-progress-modal-close').removeClass('d-none');
       }
 
       // When ALL uploads finished:
