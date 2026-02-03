@@ -187,7 +187,7 @@ $(document).ready(function () {
       $('#cancel_waiting').hide();
       $('.modal-title').show();
       $('#upload-cancel').show();
-      $('#upload-progress-modal-close').addClass('d-none');
+      $('#upload-progress-modal-close').addClass('d-none').css('display', 'none');;
 
       $('#progress-bar-container').show();
       $('#upload-error-container').hide();
@@ -369,7 +369,7 @@ function uploadFiles(file, action, maxFiles) {
         $('#upload-error-container').show();
         $('#progress-bar-container').hide();
         $('#upload-cancel').hide();
-        $('#upload-progress-modal-close').removeClass('d-none');
+        $('#upload-progress-modal-close').removeClass('d-none').css('display', 'inline-block');;
       }
 
       // When ALL uploads finished:
@@ -430,7 +430,7 @@ function cancelAlreadyUploaded() {
   }
 
   $('#upload-error-container').hide();
-  $('#upload-progress-modal-close').hide();
+  $('#upload-progress-modal-close').addClass('d-none').css('display','none');
   $('#upload-cancel').hide();
 
   const filenames = fileList.map(f => f.name);
