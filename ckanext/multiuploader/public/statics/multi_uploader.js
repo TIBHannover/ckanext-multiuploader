@@ -187,7 +187,7 @@ $(document).ready(function () {
       $('#cancel_waiting').hide();
       $('.modal-title').show();
       $('#upload-cancel').show();
-      $('#upload-progress-modal-close').show();
+      $('#upload-progress-modal-close').hide();
 
       $('#progress-bar-container').show();
       $('#upload-error-container').hide();
