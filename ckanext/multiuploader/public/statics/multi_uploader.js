@@ -7,7 +7,6 @@
 var uploadReqs = [];
 var fileList = [];
 var dest_url = $('#dest_url').val();
-var test_test = "";
 var uploadPercent = 0;
 var forbiddenLimit = false;
 var already_uploaded_count = 0;
@@ -15,7 +14,20 @@ var uploadMaxLimit = parseInt($('#upload_limit').val());
 if (uploadMaxLimit === 0) {
     uploadMaxLimit = parseFloat($('#upload_limit').val());
 }
+// CKAN 2.11 uses <meta name="csrf_token"> (WTF_CSRF_FIELD_NAME default)
+var csrf_field_name = $('meta[name=csrf_token]').length ? 'csrf_token' : '_csrf_token';
+var csrf_value = $('meta[name=' + csrf_field_name + ']').attr('content') || '';
+var progressModal;
+
 $(document).ready(function () {
+    // Bootstrap 5: modal must be controlled via the JS API, not jQuery plugin methods
+    var modalEl = document.getElementById('progress-modal');
+    if (modalEl) {
+        progressModal = new bootstrap.Modal(modalEl, {
+            backdrop: 'static',
+            keyboard: false
+        });
+    }
 
 
     /**
@@ -119,9 +131,9 @@ $(document).ready(function () {
 
 
     /**
-     * stop the default CKAN form submitting 
+     * stop the default CKAN form submitting
      */
-    $("#resource-edit").bind('submit', function (e) {
+    $("#resource-edit").on('submit', function (e) {
         e.preventDefault();
         return false;
     });
@@ -137,7 +149,7 @@ $(document).ready(function () {
             previous("go-dataset");
             return 0;
         }
-        if ($('#urlBox:visible').length !== 0 && LinkValidity()) {
+        if ($('#urlBox:visible').length !== 0 && linkValidity()) {
             // Link upload (not file)
             uploadLink(sBtn);
             return 0;
@@ -149,11 +161,11 @@ $(document).ready(function () {
             $('#progress-bar-container').show();
             $('#upload-error-container').hide();
             $('#file-danger-size').hide();
-            $('#progress-modal').modal({
-                backdrop: 'static',
-                keyboard: false,
-                show: true
-            });
+            uploadPercent = 0;
+            already_uploaded_count = 0;
+            updateProgressBar(0);
+            $('#upload-status-text').text('Preparing upload of ' + fileList.length + ' file' + (fileList.length > 1 ? 's' : '') + '...');
+            progressModal.show();
             for (var i = 0; i < fileList.length; i++) {
                 // upload a file
                 uploadFiles(fileList[i], sBtn, fileList.length);
@@ -197,12 +209,13 @@ $(document).ready(function () {
 
 /**
  * update the progress bar with upload percentage
- * @param {*} percent 
+ * @param {*} percent
  */
 function updateProgressBar(percent) {
     percent = Math.ceil(percent);
     $('#upload-progress-bar').css('width', percent + '%');
-    $('#upload-progress-bar').html(percent + '%');
+    $('#upload-progress-bar').attr('aria-valuenow', percent);
+    $('#upload-progress-bar').html(percent > 0 ? percent + '%' : '');
 }
 
 
@@ -212,7 +225,7 @@ function updateProgressBar(percent) {
 function checkFileSizes() {
     forbiddenLimit = false;
     for (var i = 0; i < fileList.length; i++) {
-        fileSize = fileList[i].size / 1000000000; // Size in GB
+        let fileSize = fileList[i].size / 1000000000; // Size in GB
         if (fileSize > uploadMaxLimit) {
             forbiddenLimit = true;
             $('#size-alert-id-' + i).show();
@@ -234,25 +247,28 @@ function uploadFiles(file, action, Max) {
     formdata.set('save', action);
     formdata.set('id', $('#id').val());
     formdata.set('description', $('#field-description').val());
-    // add csrf token
-    var csrf_value = $('meta[name=_csrf_token]').attr('content')
-    formdata.append('csrf_token', csrf_value);
+    formdata.set(csrf_field_name, csrf_value);
 
     var oldProgress = 0;
+    reqUpload.upload.addEventListener('loadstart', function () {
+        $('#upload-status-text').text('Uploading file ' + (already_uploaded_count + 1) + ' of ' + Max + '...');
+    }, false);
     reqUpload.upload.addEventListener('progress', function (e) {
-        let progress = (Math.ceil(e.loaded / (e.total * 1.1) * 100) / Max);
-        uploadPercent += (progress - oldProgress)
-        updateProgressBar(uploadPercent);
-        oldProgress = progress
+        if (e.lengthComputable) {
+            let progress = (Math.ceil(e.loaded / (e.total * 1.1) * 100) / Max);
+            uploadPercent += (progress - oldProgress);
+            updateProgressBar(uploadPercent);
+            oldProgress = progress;
+        }
     }, false);
     reqUpload.onreadystatechange = function () {
         if (reqUpload.readyState == XMLHttpRequest.DONE && reqUpload.status === 200) {
             already_uploaded_count += 1;
+            $('#upload-status-text').text(already_uploaded_count + ' of ' + Max + ' file' + (Max > 1 ? 's' : '') + ' uploaded');
             if (already_uploaded_count === Max) {
                 updateProgressBar(100);
                 window.location.replace(this.responseText);
             }
-
         }
         else if (reqUpload.readyState == XMLHttpRequest.DONE && reqUpload.status !== 200) {
             $('#progress-bar-container').hide();
@@ -278,6 +294,7 @@ function uploadLink(action) {
     formdata.set('name', $('#urlName').val());
     formdata.set('id', $('#id').val());
     formdata.set('description', $('#field-description').val());
+    formdata.set(csrf_field_name, csrf_value);
     var req = new XMLHttpRequest();
     req.onreadystatechange = function () {
         if (req.readyState == XMLHttpRequest.DONE && req.status === 200) {
@@ -295,27 +312,24 @@ function uploadLink(action) {
 function cancelAlreadyUploaded() {
     $('#cancel_waiting').show();
     $('#progress-bar-container').hide();
+    $('#upload-error-container').hide();
+    $('#upload-progress-modal-close').hide();
+    $('#upload-cancel').hide();
     $('.modal-title').hide();
-    for (let i = 0; i < uploadReqs.length; i++) {
-        uploadReqs[i].abort();
-        $('#upload-error-container').hide();
-        $('#upload-progress-modal-close').hide();
-        $('#upload-cancel').hide();
-    }
-    let filenames = [];
-    for (let i = 0; i < fileList.length; i++) {
-        filenames.push(fileList[i].name);
-    }
+    uploadReqs.forEach(function (req) { req.abort(); });
+    uploadReqs = [];
+    let filenames = fileList.map(function (f) { return f.name; });
     already_uploaded_count = 0;
     uploadPercent = 0;
     var formdata = new FormData();
     let dest_url = $('#cancel_upload_url').val();
     formdata.set('pck_id', $('#pck_id').val());
     formdata.set('filenames', filenames);
+    formdata.set(csrf_field_name, csrf_value);
     var req = new XMLHttpRequest();
     req.onreadystatechange = function () {
         if (req.readyState == XMLHttpRequest.DONE && req.status === 200) {
-            $('#progress-modal').modal('hide');
+            progressModal.hide();
         }
     }
     req.open("POST", dest_url)
@@ -333,6 +347,7 @@ function previous(action) {
     var formdata = new FormData();
     formdata.set('save', action);
     formdata.set('pck_id', $('#pck_id').val());
+    formdata.set(csrf_field_name, csrf_value);
     var req = new XMLHttpRequest();
     req.onreadystatechange = function () {
         if (req.readyState == XMLHttpRequest.DONE && req.status === 200) {
@@ -345,35 +360,15 @@ function previous(action) {
 }
 
 
-/**
- * file validity check
- * @returns 
- */
 function fileValidity() {
-    if (fileList.length !== 0 && !forbiddenLimit) {
-        return true;
-    }
-    return false
+    return fileList.length !== 0 && !forbiddenLimit;
 }
 
-/**
- * Link added by the user or not
- * @returns 
- */
-function LinkValidity() {
-    if ($('#urlText').val() !== '') {
-        return true;
-    }
-    return false
+function linkValidity() {
+    return $('#urlText').val() !== '';
 }
 
-/**
- * empty the File box list
- */
 function emptyFiles() {
     forbiddenLimit = false;
-    let items = $('.file-row');
-    for (var i = 0; i < items.length; i++) {
-        items[i].remove();
-    }
+    $('.file-row').remove();
 }

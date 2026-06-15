@@ -7,7 +7,6 @@ import pytest
 import ckan.tests.factories as factories
 import ckan.lib.helpers as h
 import ckan.model as model
-import ckan.lib.create_test_data as ctd
 #from pathlib import Path
 #import base64
 #import json
@@ -22,8 +21,6 @@ class TestUpload(object):
 
     @pytest.fixture(autouse=True)
     def intial(self, clean_db, clean_index):
-        ctd.CreateTestData.create()
-        #self.sysadmin_user = model.User.get("testsysadmin")
         self.sysadmin_user = factories.Sysadmin()
         self.sysadmin_token = factories.APIToken(user=self.sysadmin_user["id"])
         self.sysadmin_token = self.sysadmin_token["token"]
@@ -50,7 +47,7 @@ class TestUpload(object):
         self.resource_data['pck_id'] = dataset['id']                
         response = app.post(self.upload_url, data=self.resource_data)   
         assert response.status_code == 403
-        assert "You need to authenticate before accessing this function" in response.body
+        assert "You need to authenticate before accessing this function" in response.get_data(as_text=True)
 
     
     def test_resource_upload_admin_finish_button(self, app):
@@ -70,7 +67,7 @@ class TestUpload(object):
         auth = {u"Authorization": self.sysadmin_token}
         response = app.post(self.upload_url, data=self.resource_data , extra_environ=auth)           
         assert response.status_code == 200
-        assert "/dataset/" in response.body
+        assert "/dataset/" in response.get_data(as_text=True)
     
     
     def test_resource_upload_validation(self, app):
@@ -86,7 +83,7 @@ class TestUpload(object):
         auth = {u"Authorization": self.sysadmin_token}
         response = app.post(self.upload_url, data=self.resource_data , extra_environ=auth)           
         assert response.status_code == 400
-        assert "missing data" in response.body
+        assert "missing data" in response.get_data(as_text=True)
     
 
     def test_resource_upload_admin_previous(self, app):
@@ -104,7 +101,7 @@ class TestUpload(object):
         auth = {u"Authorization": self.sysadmin_token}
         response = app.post(self.upload_url, data=self.resource_data , extra_environ=auth)           
         assert response.status_code == 200
-        assert "/dataset/edit" in response.body
+        assert "/dataset/edit" in response.get_data(as_text=True)
         
         
     def test_resource_upload_admin_add_button(self, app):
@@ -123,4 +120,4 @@ class TestUpload(object):
         auth = {u"Authorization": self.sysadmin_token}
         response = app.post(self.upload_url, data=self.resource_data , extra_environ=auth)           
         assert response.status_code == 200
-        assert "/dataset/" in response.body
+        assert "/dataset/" in response.get_data(as_text=True)
