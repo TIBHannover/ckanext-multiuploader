@@ -6,10 +6,10 @@
       </div>
       <div class="modal-body">
         <div class="progress" id="progress-bar-container">
-           <div class="progress-bar progress-bar-striped progress-bar-animated" id="upload-progress-bar" role="progressbar" aria-valuenow="100" aria-valuemin="50" aria-valuemax="100">
-              {{_('Uploading ...')}}
+           <div class="progress-bar progress-bar-striped progress-bar-animated" id="upload-progress-bar" role="progressbar" style="min-width: 2em;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
            </div>
         </div>
+        <p id="upload-status-text" class="text-center" style="margin-top: 8px; color: #555;"></p>
         <div id="upload-error-container">
           <i class='fa fa-exclamation-circle' style='font-size:48px;color:red'></i>
             <p>
@@ -24,7 +24,7 @@
       </div>
       <div class="modal-footer">
         <button id="upload-cancel" type="button" class="btn btn-danger">Cancel This Upload</button>
-        <button id="upload-progress-modal-close" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button id="upload-progress-modal-close" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
       </div>
     </div>
   </div>

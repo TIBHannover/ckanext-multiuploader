@@ -7,18 +7,19 @@ import ckan.plugins.toolkit as toolkit
 
 class UploadController():
 
-    def upload_resources():        
-        if toolkit.g.user: 
-            try:               
+    @staticmethod
+    def upload_resources():
+        if toolkit.g.user:
+            try:
                 package_name = request.form['pck_id']
                 action = request.form['save']
-                if action == "go-dataset":  # Previous button: go back to the dataset metadat                 
+                if action == "go-dataset":  # Previous button: go back to the dataset metadat
                     return h.url_for('dataset.edit', id=str(package_name) ,  _external=True)
 
                 elif action == "go-dataset-complete": # Add resource to an active dataset
-                    Helper.add_resource(package_name, request, False, int(request.form['isLink']))                
+                    Helper.add_resource(package_name, request, False, int(request.form['isLink']))
                     return h.url_for('dataset.read', id=str(package_name) ,  _external=True)
-                
+
                 else: # Add resource to a draft dataset
                     Helper.add_resource(package_name, request, True, int(request.form['isLink']))
                     if Helper.check_plugin_enabled("resource_custom_metadata"): # if resource_custom_metadata plugin exists:
@@ -31,7 +32,7 @@ class UploadController():
                         return h.url_for('media_wiki.machines_view', id=str(package_name) ,  _external=True)
 
                     return h.url_for('dataset.read', id=str(package_name) ,  _external=True)
-            except:
+            except Exception:
                 return toolkit.abort(400, "missing data")
 
 
@@ -41,26 +42,30 @@ class UploadController():
 
     
     
+    @staticmethod
     def delete_uploaded_resources():
         package_name = request.form.get('pck_id')
-        filenames = request.form.get('filenames')        
+        filenames_raw = request.form.get('filenames', '')
+        filenames = set(filenames_raw.split(',')) if filenames_raw else set()
         if toolkit.g.user:
             package = toolkit.get_action('package_show')({}, {'name_or_id': package_name})
             for res in package['resources']:
                 if res['name'] in filenames:
-                    toolkit.get_action('resource_delete')({}, {'id': res['id']})            
+                    toolkit.get_action('resource_delete')({}, {'id': res['id']})
             return "True"
         else:
-            return toolkit.abort(403, "You need to authenticate before accessing this function" )
+            return toolkit.abort(403, "You need to authenticate before accessing this function")
     
     
     
+    @staticmethod
     def cancel_dataset_plugin_is_enabled():
         if Helper.check_plugin_enabled('cancel_dataset_creation'):
             return True
         return False
     
     
+    @staticmethod
     def get_upload_limit():
         max_size = toolkit.config.get("ckan.max_resource_size")
         if not max_size:

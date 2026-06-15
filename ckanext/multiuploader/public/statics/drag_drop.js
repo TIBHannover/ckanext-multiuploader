@@ -10,7 +10,6 @@ $(document).ready(function () {
     });
  
     $('.module').on('dragover', function (e) {
-        e.originalEvent.dataTransfer.dragEffect = "copyMove";
         e.originalEvent.dataTransfer.dropEffect = "copy";
         $('#fileNames').addClass('drag_over');
         return false;
