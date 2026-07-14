@@ -154,10 +154,9 @@ $(document).ready(function () {
                 keyboard: false,
                 show: true
             });
-            for (var i = 0; i < fileList.length; i++) {
-                // upload a file
-                uploadFiles(fileList[i], sBtn, fileList.length);
-            }
+            uploadPercent = 0;
+            already_uploaded_count = 0;
+            uploadFilesSequentially(sBtn);
         }
         else {
             if (forbiddenLimit) {
@@ -200,7 +199,7 @@ $(document).ready(function () {
  * @param {*} percent 
  */
 function updateProgressBar(percent) {
-    percent = Math.ceil(percent);
+    percent = Math.min(100, Math.ceil(percent));
     $('#upload-progress-bar').css('width', percent + '%');
     $('#upload-progress-bar').html(percent + '%');
 }
@@ -220,11 +219,32 @@ function checkFileSizes() {
     }
 }
 
+function getTotalUploadSize() {
+    var totalSize = 0;
+    for (var i = 0; i < fileList.length; i++) {
+        totalSize += fileList[i].size;
+    }
+    return totalSize;
+}
+
 /**
- * Upload a file to server
- * 
+ * Upload files to server one by one.
  */
-function uploadFiles(file, action, Max) {
+function uploadFilesSequentially(action) {
+    var totalSize = getTotalUploadSize();
+    uploadNextFile(0, action, totalSize, 0);
+}
+
+/**
+ * Upload a file to server.
+ */
+function uploadNextFile(index, action, totalSize, uploadedSize) {
+    if (index >= fileList.length) {
+        updateProgressBar(100);
+        return 0;
+    }
+
+    var file = fileList[index];
     var formdata = new FormData();
     let reqUpload = new XMLHttpRequest();
     uploadReqs.push(reqUpload);
@@ -238,19 +258,24 @@ function uploadFiles(file, action, Max) {
     var csrf_value = $('meta[name=_csrf_token]').attr('content')
     formdata.append('csrf_token', csrf_value);
 
-    var oldProgress = 0;
     reqUpload.upload.addEventListener('progress', function (e) {
-        let progress = (Math.ceil(e.loaded / (e.total * 1.1) * 100) / Max);
-        uploadPercent += (progress - oldProgress)
-        updateProgressBar(uploadPercent);
-        oldProgress = progress
+        if (e.lengthComputable && totalSize > 0) {
+            uploadPercent = ((uploadedSize + e.loaded) / totalSize) * 100;
+            updateProgressBar(uploadPercent);
+        }
     }, false);
     reqUpload.onreadystatechange = function () {
         if (reqUpload.readyState == XMLHttpRequest.DONE && reqUpload.status === 200) {
             already_uploaded_count += 1;
-            if (already_uploaded_count === Max) {
+            uploadedSize += file.size;
+            uploadPercent = (uploadedSize / totalSize) * 100;
+            updateProgressBar(uploadPercent);
+            if (already_uploaded_count === fileList.length) {
                 updateProgressBar(100);
                 window.location.replace(this.responseText);
+            }
+            else {
+                uploadNextFile(index + 1, action, totalSize, uploadedSize);
             }
 
         }
