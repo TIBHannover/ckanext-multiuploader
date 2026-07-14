@@ -8,9 +8,38 @@ import ckan.tests.factories as factories
 import ckan.lib.helpers as h
 import ckan.model as model
 import ckan.lib.create_test_data as ctd
+from ckanext.multiuploader.lib import Helper
 #from pathlib import Path
 #import base64
 #import json
+
+
+class FakeRequest(object):
+    def __init__(self, form):
+        self.form = form
+
+
+class TestResourceDescription(object):
+
+    def test_missing_resource_description_defaults_to_empty_string(self):
+        request = FakeRequest({})
+
+        assert Helper.get_resource_description(request) == ''
+
+    def test_undefined_resource_description_defaults_to_empty_string(self):
+        request = FakeRequest({'description': 'undefined'})
+
+        assert Helper.get_resource_description(request) == ''
+
+    def test_none_resource_description_defaults_to_empty_string(self):
+        request = FakeRequest({'description': None})
+
+        assert Helper.get_resource_description(request) == ''
+
+    def test_resource_description_keeps_string_value(self):
+        request = FakeRequest({'description': 'Test Test'})
+
+        assert Helper.get_resource_description(request) == 'Test Test'
 
 
 

@@ -253,7 +253,7 @@ function uploadNextFile(index, action, totalSize, uploadedSize) {
     formdata.set('pck_id', $('#pck_id').val());
     formdata.set('save', action);
     formdata.set('id', $('#id').val());
-    formdata.set('description', $('#field-description').val());
+    formdata.set('description', getResourceDescription());
     // add csrf token
     var csrf_value = $('meta[name=_csrf_token]').attr('content')
     formdata.append('csrf_token', csrf_value);
@@ -302,7 +302,7 @@ function uploadLink(action) {
     formdata.set('save', action);
     formdata.set('name', $('#urlName').val());
     formdata.set('id', $('#id').val());
-    formdata.set('description', $('#field-description').val());
+    formdata.set('description', getResourceDescription());
     var req = new XMLHttpRequest();
     req.onreadystatechange = function () {
         if (req.readyState == XMLHttpRequest.DONE && req.status === 200) {
@@ -312,6 +312,11 @@ function uploadLink(action) {
     req.open("POST", dest_url)
     req.send(formdata)
     return 0;
+}
+
+function getResourceDescription() {
+    var value = $('#field-description').val();
+    return typeof value === 'string' ? value : '';
 }
 
 /**

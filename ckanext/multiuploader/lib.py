@@ -4,9 +4,15 @@ import ckan.plugins.toolkit as toolkit
 
 class Helper():
 
+    def get_resource_description(request):
+        description = request.form.get('description', '')
+        if description == 'undefined' or description is None:
+            return ''
+        return description
+
     def add_resource(package_name, request, active, isLink):
         package = toolkit.get_action('package_show')({}, {'name_or_id': package_name})
-        description = request.form['description']
+        description = Helper.get_resource_description(request)
         context = {}
         if isLink == 1: # resource is a link not file
             resource_data = {}
