@@ -1,10 +1,12 @@
 """Tests for the ckanext.multiuploader extension."""
 
+import io
 from typing import ClassVar
 
 import ckan.lib.create_test_data as ctd
 import ckan.lib.helpers as h
 import pytest
+from ckan.plugins import toolkit
 from ckan.tests import factories
 
 # from pathlib import Path
@@ -117,3 +119,70 @@ class TestUpload:
         )
         assert response.status_code == 200
         assert "/dataset/" in response.body
+
+    def test_resource_upload_link(self, app):
+        """isLink=1 must create the resource as a link
+        (url_type='') using the given url and name, add it
+        to the package, and mark the package active on the
+        draft-finish path.
+        """
+
+        owner_org = factories.Organization(
+            users=[{"name": self.sysadmin_user["id"], "capacity": "member"}]
+        )
+        dataset = factories.Dataset(owner_org=owner_org["id"], state="draft")
+        self.resource_data["pck_id"] = dataset["id"]
+        self.resource_data["isLink"] = 1
+        self.resource_data["url"] = "https://example.com/data.csv"
+        self.resource_data["name"] = "data.csv"
+        auth = {"Authorization": self.sysadmin_token}
+        response = app.post(
+            self.upload_url, data=self.resource_data, extra_environ=auth
+        )
+        assert response.status_code == 200
+
+        package = toolkit.get_action("package_show")(
+            {"ignore_auth": True}, {"name_or_id": dataset["id"]}
+        )
+        assert package["state"] == "active"
+        assert len(package["resources"]) == 1
+        resource = package["resources"][0]
+        assert resource["url_type"] == ""
+        assert resource["url"] == "https://example.com/data.csv"
+        assert resource["name"] == "data.csv"
+
+    def test_resource_upload_file(self, app):
+        """isLink=0 with files in the request must create the
+        resource(s) as uploads (url_type='upload'), add them
+        to the package, and mark the package active on the
+        draft-finish path.
+        """
+
+        owner_org = factories.Organization(
+            users=[{"name": self.sysadmin_user["id"], "capacity": "member"}]
+        )
+        dataset = factories.Dataset(owner_org=owner_org["id"], state="draft")
+        self.resource_data["pck_id"] = dataset["id"]
+        self.resource_data["isLink"] = 0
+        self.resource_data["files"] = [
+            (io.BytesIO(b"col1,col2\n1,2\n"), "first.csv"),
+            (io.BytesIO(b"hello world"), "second.txt"),
+        ]
+        auth = {"Authorization": self.sysadmin_token}
+        response = app.post(
+            self.upload_url,
+            data=self.resource_data,
+            extra_environ=auth,
+            content_type="multipart/form-data",
+        )
+        assert response.status_code == 200
+
+        package = toolkit.get_action("package_show")(
+            {"ignore_auth": True}, {"name_or_id": dataset["id"]}
+        )
+        assert package["state"] == "active"
+        assert len(package["resources"]) == 2
+        names = {resource["name"] for resource in package["resources"]}
+        assert names == {"first.csv", "second.txt"}
+        for resource in package["resources"]:
+            assert resource["url_type"] == "upload"
