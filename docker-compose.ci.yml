@@ -1,0 +1,35 @@
+services:
+  ckan:
+    image: ckan/ckan-dev:${CKAN_IMAGE:-2.10-py3.10}
+    user: root
+    depends_on:
+      solr:
+        condition: service_started
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    environment:
+      CKAN_SQLALCHEMY_URL: postgresql://ckan_default:pass@postgres/ckan_test
+      CKAN_DATASTORE_WRITE_URL: postgresql://datastore_write:pass@postgres/datastore_test
+      CKAN_DATASTORE_READ_URL: postgresql://datastore_read:pass@postgres/datastore_test
+      CKAN_SOLR_URL: http://solr:8983/solr/ckan
+      CKAN_REDIS_URL: redis://redis:6379/1
+    volumes:
+      - .:/srv/app/src_extensions/ckanext-multiuploader
+    working_dir: /srv/app/src_extensions/ckanext-multiuploader
+    command: sleep infinity
+
+  solr:
+    image: ckan/ckan-solr:${SOLR_IMAGE:-2.10-solr8}
+
+  postgres:
+    image: ckan/ckan-postgres-dev:${CKAN_VERSION:-2.10}
+    healthcheck:
+      test: ["CMD", "pg_isready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:3

@@ -58,6 +58,44 @@ Then I should see the alternate user interface of "multiuploader" in the "Add da
 
 ## Tests
 
-To run the tests, do:
+### Using Docker (recommended)
+
+No local CKAN installation is required — `make ci` provisions a disposable
+CKAN + Solr + Postgres + Redis environment via Docker Compose (the same
+images used in GitHub Actions CI), installs the extension into it, and
+runs the test suite:
+
+    make ci
+
+Get a coverage report (written to `coverage.xml` in this directory, and
+printed as a per-file summary in the terminal):
+
+    make ci-coverage
+
+Run lint (Black/ruff) only, without spinning up any containers:
+
+    make lint
+
+Other targets, useful for an interactive inner loop against an
+already-running environment (`make up` first):
+
+| Target | Description |
+| --- | --- |
+| `make up` | Start the CKAN/Solr/Postgres/Redis containers |
+| `make install` | Install the extension and its requirements into the running `ckan` container |
+| `make db-init` | Initialize the CKAN test database (implies `install`) |
+| `make test` | Run the test suite against an already-provisioned environment |
+| `make test-coverage` | Like `make test`, with coverage reporting |
+| `make bash` | Open a shell in the running `ckan` container |
+| `make down` | Stop and remove all containers and volumes |
+
+CKAN/Solr version used by the containers can be overridden, e.g. to test
+against a different CKAN release:
+
+    make ci CKAN_VERSION=2.11 CKAN_IMAGE=2.11-py3.10 SOLR_IMAGE=2.11-solr9
+
+### Without Docker
+
+If you already have a CKAN development environment set up locally:
 
     pytest --ckan-ini=test.ini  --disable-pytest-warnings  ckanext/multiuploader/tests/
