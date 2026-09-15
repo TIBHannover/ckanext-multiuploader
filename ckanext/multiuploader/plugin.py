@@ -1,9 +1,8 @@
-# encoding: utf-8
-
-import ckan.plugins as plugins
-import ckan.plugins.toolkit as toolkit
-from ckanext.multiuploader.controllers import UploadController
+from ckan import plugins
+from ckan.plugins import toolkit
 from flask import Blueprint
+
+from ckanext.multiuploader.controllers import UploadController
 
 
 class MultiuploaderPlugin(plugins.SingletonPlugin):
@@ -14,38 +13,38 @@ class MultiuploaderPlugin(plugins.SingletonPlugin):
     # IConfigurer
 
     def update_config(self, config_):
-        toolkit.add_template_directory(config_, 'templates')
-        toolkit.add_public_directory(config_, 'public')
-        toolkit.add_resource('fanstatic', 'multiuploader')
-        toolkit.add_resource('public/statics', 'ckanext-multiuploader')
-        
+        toolkit.add_template_directory(config_, "templates")
+        toolkit.add_public_directory(config_, "public")
+        toolkit.add_resource("fanstatic", "multiuploader")
+        toolkit.add_resource("public/statics", "ckanext-multiuploader")
 
-    #plugin Blueprint
+    # plugin Blueprint
 
     def get_blueprint(self):
 
         blueprint = Blueprint(self.name, self.__module__)
-        blueprint.template_folder = u'templates'
+        blueprint.template_folder = "templates"
         blueprint.add_url_rule(
-            u'/multiuploader/upload_resources',
-            u'upload_resources',
+            "/multiuploader/upload_resources",
+            "upload_resources",
             UploadController.upload_resources,
-            methods=['POST']
-            )
-        
+            methods=["POST"],
+        )
+
         blueprint.add_url_rule(
-            u'/multiuploader/delete_uploaded_resources',
-            u'delete_uploaded_resources',
+            "/multiuploader/delete_uploaded_resources",
+            "delete_uploaded_resources",
             UploadController.delete_uploaded_resources,
-            methods=['POST']
-            )
+            methods=["POST"],
+        )
 
         return blueprint
-    
-    #ITemplateHelpers
+
+    # ITemplateHelpers
 
     def get_helpers(self):
-        return {'cancel_dataset_is_enabled': UploadController.cancel_dataset_plugin_is_enabled, 
-            'get_max_upload_size': UploadController.get_upload_limit,
-            'which_sfb_multiuploader': UploadController.which_sfb_multiuploader
+        return {
+            "cancel_dataset_is_enabled": UploadController.cancel_dataset_plugin_is_enabled,
+            "get_max_upload_size": UploadController.get_upload_limit,
+            "which_sfb_multiuploader": UploadController.which_sfb_multiuploader,
         }
