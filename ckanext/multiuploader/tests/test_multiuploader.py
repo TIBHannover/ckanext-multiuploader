@@ -4,7 +4,6 @@ import io
 from typing import ClassVar
 
 import ckan.lib.create_test_data as ctd
-import ckan.lib.helpers as h
 import pytest
 from ckan.plugins import toolkit
 from ckan.tests import factories
@@ -14,11 +13,11 @@ from ckan.tests import factories
 # import json
 
 
-@pytest.mark.usefixtures("clean_db", "with_plugins", "with_request_context")
+@pytest.mark.usefixtures("clean_db", "with_plugins")
 class TestUpload:
     sysadmin_user = None
     resource_data: ClassVar[dict] = {}
-    upload_url = None
+    upload_url = "/multiuploader/upload_resources"
 
     @pytest.fixture(autouse=True)
     def intial(self, clean_db, clean_index):
@@ -33,7 +32,6 @@ class TestUpload:
             "id": "",
             "description": "Test Test",
         }
-        self.upload_url = h.url_for("multiuploader.upload_resources")
 
     def test_resource_upload_guest_user(self, app):
         """A guest user should not be abled to
@@ -65,9 +63,7 @@ class TestUpload:
         #   img = test.read()
         self.resource_data["pck_id"] = dataset["id"]
         auth = {"Authorization": self.sysadmin_token}
-        response = app.post(
-            self.upload_url, data=self.resource_data, extra_environ=auth
-        )
+        response = app.post(self.upload_url, data=self.resource_data, headers=auth)
         assert response.status_code == 200
         assert "/dataset/" in response.body
 
@@ -77,9 +73,7 @@ class TestUpload:
         package id
         """
         auth = {"Authorization": self.sysadmin_token}
-        response = app.post(
-            self.upload_url, data=self.resource_data, extra_environ=auth
-        )
+        response = app.post(self.upload_url, data=self.resource_data, headers=auth)
         assert response.status_code == 400
         assert "missing data" in response.body
 
@@ -95,9 +89,7 @@ class TestUpload:
         self.resource_data["save"] = "go-dataset"
         self.resource_data["pck_id"] = dataset["id"]
         auth = {"Authorization": self.sysadmin_token}
-        response = app.post(
-            self.upload_url, data=self.resource_data, extra_environ=auth
-        )
+        response = app.post(self.upload_url, data=self.resource_data, headers=auth)
         assert response.status_code == 200
         assert "/dataset/edit" in response.body
 
@@ -114,9 +106,7 @@ class TestUpload:
         self.resource_data["pck_id"] = dataset["id"]
         self.resource_data["save"] = "go-dataset-complete"
         auth = {"Authorization": self.sysadmin_token}
-        response = app.post(
-            self.upload_url, data=self.resource_data, extra_environ=auth
-        )
+        response = app.post(self.upload_url, data=self.resource_data, headers=auth)
         assert response.status_code == 200
         assert "/dataset/" in response.body
 
@@ -136,9 +126,7 @@ class TestUpload:
         self.resource_data["url"] = "https://example.com/data.csv"
         self.resource_data["name"] = "data.csv"
         auth = {"Authorization": self.sysadmin_token}
-        response = app.post(
-            self.upload_url, data=self.resource_data, extra_environ=auth
-        )
+        response = app.post(self.upload_url, data=self.resource_data, headers=auth)
         assert response.status_code == 200
 
         package = toolkit.get_action("package_show")(
@@ -172,7 +160,7 @@ class TestUpload:
         response = app.post(
             self.upload_url,
             data=self.resource_data,
-            extra_environ=auth,
+            headers=auth,
             content_type="multipart/form-data",
         )
         assert response.status_code == 200
