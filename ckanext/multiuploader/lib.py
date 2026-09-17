@@ -44,6 +44,9 @@ class Helper:
 
         return True
 
+    @staticmethod
     def check_plugin_enabled(plugin_name):
-        plugins = toolkit.config.get("ckan.plugins")
+        plugins = toolkit.config.get("ckan.plugins") or []
+        if isinstance(plugins, str):
+            plugins = plugins.split()
         return plugin_name in plugins

@@ -7,7 +7,6 @@
 var uploadReqs = [];
 var fileList = [];
 var dest_url = $('#dest_url').val();
-var test_test = "";
 var uploadPercent = 0;
 var forbiddenLimit = false;
 var already_uploaded_count = 0;
@@ -15,6 +14,41 @@ var uploadMaxLimit = parseInt($('#upload_limit').val());
 if (uploadMaxLimit === 0) {
     uploadMaxLimit = parseFloat($('#upload_limit').val());
 }
+// CKAN publishes the configured POST field separately from the token itself.
+function addCsrfToken(formdata) {
+    var field = $('meta[name="csrf_field_name"]').attr('content');
+    if (!field) {
+        field = $('meta[name="csrf_token"]').length ? 'csrf_token' : '_csrf_token';
+    }
+    var meta = document.getElementsByName(field)[0];
+    if (meta && meta.content) {
+        formdata.set(field, meta.content);
+    }
+}
+
+var progressModal;
+function toggleProgressModal(show) {
+    var element = document.getElementById('progress-modal');
+    if (!element) {
+        return;
+    }
+    if (window.bootstrap && typeof window.bootstrap.Modal === 'function') {
+        if (!progressModal) {
+            var options = {backdrop: 'static', keyboard: false};
+            var Modal = window.bootstrap.Modal;
+            progressModal = typeof Modal.getOrCreateInstance === 'function'
+                ? Modal.getOrCreateInstance(element, options)
+                : new Modal(element, options);
+        }
+        progressModal[show ? 'show' : 'hide']();
+    } else if (typeof $.fn.modal === 'function') {
+        $(element).modal(show ? {backdrop: 'static', keyboard: false, show: true} : 'hide');
+    } else {
+        // Keep progress and cancellation accessible if a theme omits Bootstrap JS.
+        $(element).toggle(show).toggleClass('show', show).attr('aria-hidden', !show);
+    }
+}
+
 $(document).ready(function () {
 
 
@@ -149,11 +183,13 @@ $(document).ready(function () {
             $('#progress-bar-container').show();
             $('#upload-error-container').hide();
             $('#file-danger-size').hide();
-            $('#progress-modal').modal({
-                backdrop: 'static',
-                keyboard: false,
-                show: true
-            });
+            uploadPercent = 0;
+            already_uploaded_count = 0;
+            uploadReqs = [];
+            updateProgressBar(0);
+            $('#upload-progress-modal-close').hide();
+            $('#upload-status-text').text(ckan.i18n._('Uploading ...'));
+            toggleProgressModal(true);
             for (var i = 0; i < fileList.length; i++) {
                 // upload a file
                 uploadFiles(fileList[i], sBtn, fileList.length);
@@ -202,7 +238,8 @@ $(document).ready(function () {
 function updateProgressBar(percent) {
     percent = Math.ceil(percent);
     $('#upload-progress-bar').css('width', percent + '%');
-    $('#upload-progress-bar').html(percent + '%');
+    $('#upload-progress-bar').attr('aria-valuenow', percent);
+    $('#upload-progress-bar').text(percent + '%');
 }
 
 
@@ -212,7 +249,7 @@ function updateProgressBar(percent) {
 function checkFileSizes() {
     forbiddenLimit = false;
     for (var i = 0; i < fileList.length; i++) {
-        fileSize = fileList[i].size / 1000000000; // Size in GB
+        var fileSize = fileList[i].size / 1000000000; // Size in GB
         if (fileSize > uploadMaxLimit) {
             forbiddenLimit = true;
             $('#size-alert-id-' + i).show();
@@ -234,12 +271,13 @@ function uploadFiles(file, action, Max) {
     formdata.set('save', action);
     formdata.set('id', $('#id').val());
     formdata.set('description', $('#field-description').val());
-    // add csrf token
-    var csrf_value = $('meta[name=_csrf_token]').attr('content')
-    formdata.append('csrf_token', csrf_value);
+    addCsrfToken(formdata);
 
     var oldProgress = 0;
     reqUpload.upload.addEventListener('progress', function (e) {
+        if (!e.lengthComputable) {
+            return;
+        }
         let progress = (Math.ceil(e.loaded / (e.total * 1.1) * 100) / Max);
         uploadPercent += (progress - oldProgress)
         updateProgressBar(uploadPercent);
@@ -248,6 +286,7 @@ function uploadFiles(file, action, Max) {
     reqUpload.onreadystatechange = function () {
         if (reqUpload.readyState == XMLHttpRequest.DONE && reqUpload.status === 200) {
             already_uploaded_count += 1;
+            $('#upload-status-text').text(ckan.i18n._('Uploaded %(count)s of %(total)s files', {count: already_uploaded_count, total: Max}));
             if (already_uploaded_count === Max) {
                 updateProgressBar(100);
                 window.location.replace(this.responseText);
@@ -278,6 +317,7 @@ function uploadLink(action) {
     formdata.set('name', $('#urlName').val());
     formdata.set('id', $('#id').val());
     formdata.set('description', $('#field-description').val());
+    addCsrfToken(formdata);
     var req = new XMLHttpRequest();
     req.onreadystatechange = function () {
         if (req.readyState == XMLHttpRequest.DONE && req.status === 200) {
@@ -302,6 +342,7 @@ function cancelAlreadyUploaded() {
         $('#upload-progress-modal-close').hide();
         $('#upload-cancel').hide();
     }
+    uploadReqs = [];
     let filenames = [];
     for (let i = 0; i < fileList.length; i++) {
         filenames.push(fileList[i].name);
@@ -311,11 +352,12 @@ function cancelAlreadyUploaded() {
     var formdata = new FormData();
     let dest_url = $('#cancel_upload_url').val();
     formdata.set('pck_id', $('#pck_id').val());
-    formdata.set('filenames', filenames);
+    filenames.forEach(function (name) { formdata.append('filenames[]', name); });
+    addCsrfToken(formdata);
     var req = new XMLHttpRequest();
     req.onreadystatechange = function () {
         if (req.readyState == XMLHttpRequest.DONE && req.status === 200) {
-            $('#progress-modal').modal('hide');
+            toggleProgressModal(false);
         }
     }
     req.open("POST", dest_url)
@@ -333,6 +375,7 @@ function previous(action) {
     var formdata = new FormData();
     formdata.set('save', action);
     formdata.set('pck_id', $('#pck_id').val());
+    addCsrfToken(formdata);
     var req = new XMLHttpRequest();
     req.onreadystatechange = function () {
         if (req.readyState == XMLHttpRequest.DONE && req.status === 200) {

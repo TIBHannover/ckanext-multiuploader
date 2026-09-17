@@ -12,7 +12,6 @@ my-js:
       - vendor/vendor
       - vendor/bootstrap
       - vendor/jquery
-      - vendor/jquery.ui.core
   contents:
     - multi_uploader.js
     - drag_drop.js

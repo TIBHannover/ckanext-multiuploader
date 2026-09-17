@@ -3,7 +3,6 @@
 import io
 from typing import ClassVar
 
-import ckan.lib.create_test_data as ctd
 import pytest
 from ckan.plugins import toolkit
 from ckan.tests import factories
@@ -21,8 +20,6 @@ class TestUpload:
 
     @pytest.fixture(autouse=True)
     def intial(self, clean_db, clean_index):
-        ctd.CreateTestData.create()
-        # self.sysadmin_user = model.User.get("testsysadmin")
         self.sysadmin_user = factories.Sysadmin()
         self.sysadmin_token = factories.APIToken(user=self.sysadmin_user["id"])
         self.sysadmin_token = self.sysadmin_token["token"]

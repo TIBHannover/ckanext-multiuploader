@@ -7,6 +7,7 @@ from ckanext.multiuploader.lib import Helper
 
 class UploadController:
 
+    @staticmethod
     def upload_resources():
         if toolkit.g.user:
             try:
@@ -71,9 +72,14 @@ class UploadController:
                 403, "You need to authenticate before accessing this function"
             )
 
+    @staticmethod
     def delete_uploaded_resources():
         package_name = request.form.get("pck_id")
-        filenames = request.form.get("filenames")
+        filenames = set(request.form.getlist("filenames[]"))
+        if not filenames:
+            # Accept requests from older cached versions of the uploader script.
+            filenames_raw = request.form.get("filenames", "")
+            filenames = set(filenames_raw.split(",")) if filenames_raw else set()
         if toolkit.g.user:
             package = toolkit.get_action("package_show")(
                 {}, {"name_or_id": package_name}
@@ -87,9 +93,11 @@ class UploadController:
                 403, "You need to authenticate before accessing this function"
             )
 
+    @staticmethod
     def cancel_dataset_plugin_is_enabled():
         return Helper.check_plugin_enabled("cancel_dataset_creation")
 
+    @staticmethod
     def get_upload_limit():
         max_size = toolkit.config.get("ckan.max_resource_size")
         if not max_size:
