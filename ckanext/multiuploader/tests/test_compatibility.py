@@ -1,5 +1,6 @@
 """Focused regressions for the remaining PR #6 compatibility fixes."""
 
+import logging
 from unittest.mock import Mock
 
 import pytest
@@ -10,6 +11,18 @@ from werkzeug.exceptions import Forbidden
 
 from ckanext.multiuploader.controllers import UploadController
 from ckanext.multiuploader.lib import Helper
+
+
+@pytest.mark.usefixtures("with_plugins")
+def test_multiuploader_asset_include_without_unknown_assets(app, caplog):
+    from ckan.lib.webassets_tools import include_asset
+
+    caplog.set_level(logging.ERROR, logger="ckan.lib.webassets_tools")
+
+    with app.flask_app.test_request_context("/"):
+        include_asset("ckanext-multiuploader/my-js")
+
+    assert "Trying to include unknown asset" not in caplog.text
 
 
 @pytest.mark.parametrize(
