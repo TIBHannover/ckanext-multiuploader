@@ -6,6 +6,9 @@
 
 var uploadReqs = [];
 var fileList = [];
+// Enable separate descriptions for every uploaded resource.
+var individualDescriptions =
+    $('#individual-descriptions-enabled').val() === 'true';
 var dest_url = $('#dest_url').val();
 var uploadPercent = 0;
 var forbiddenLimit = false;
@@ -49,6 +52,82 @@ function toggleProgressModal(show) {
     }
 }
 
+/**
+ * Display uploaded filenames and individual description fields.
+ * Used only when individual descriptions are enabled.
+ */
+function renderResourceFiles() {
+
+    var filesBox = $('#fileNames');
+
+    // Remove previously displayed file rows.
+    filesBox.find('.file-row').remove();
+
+    if (fileList.length === 0) {
+        $('#fileNameMessage').show();
+        return;
+    }
+
+    $('#fileNameMessage').hide();
+
+    // Create one row for every selected file.
+    fileList.forEach(function (file, index) {
+
+        var row = $('<div>', {
+            'class': 'row file-row',
+            'data-index': index
+        });
+
+        var column = $('<div>', {
+            'class': 'col-sm-12'
+        });
+
+        var fileName = $('<div>', {
+            'class': 'fileItem'
+        }).text(file.name + '  ');
+
+        var removeButton = $('<button>', {
+            type: 'button',
+            'class': 'btn btn-sm btn-danger remove-resource',
+            text: 'Remove'
+        });
+
+        fileName.append(removeButton);
+
+        var sizeAlert = $('<div>', {
+            'class': 'size-alert',
+            id: 'size-alert-id-' + index
+        }).text('File too big!').hide();
+
+        var descriptionLabel = $('<label>', {
+            text: 'Resource Description *'
+        });
+
+        var descriptionInput = $('<textarea>', {
+            'class': 'form-control resource-description',
+            rows: 3,
+            placeholder: 'Enter a description for this resource',
+            required: true
+        });
+
+        // Restore description when the list is redrawn.
+        descriptionInput.val(file._resourceDescription || '');
+
+        // Save each description with its corresponding file.
+        descriptionInput.on('input', function () {
+            file._resourceDescription = $(this).val();
+        });
+
+        column.append(fileName);
+        column.append(sizeAlert);
+        column.append(descriptionLabel);
+        column.append(descriptionInput);
+
+        row.append(column);
+        filesBox.append(row);
+    });
+}
+
 $(document).ready(function () {
 
 
@@ -80,28 +159,70 @@ $(document).ready(function () {
      *  triggers when the user adds a new file(s)
      */
     $(document).on('change', '#fileUpload', function () {
-        var files = $("#fileUpload")[0].files;
-        emptyFiles();
-        for (var i = 0; i < files.length; i++) {
-            fileList.push(files[i]);
-        }
-        var filesBox = $('#fileNames');
-        $('#fileNameMessage').hide();
-        let elem = "<div class='row file-row'><div class='col-sm-12'><span>First</span><span class='size-alert-span' id='SIZE_ALERT_ID'>Second</span></div></div>";
-        for (var i = 0; i < fileList.length; i++) {
-            elem = elem.replace('First', "<div class='fileItem' id='ID'>FILE  <i class='fa fa-close'></i></div>");
-            elem = elem.replace('Second', "<div class='size-alert'><p>File too big!</p></div>");
-            elem = elem.replace('ID', i);
-            elem = elem.replace('SIZE_ALERT_ID', 'size-alert-id-' + i);
-            elem = elem.replace('FILE', fileList[i].name);
-            filesBox.append(elem);
-            elem = "<div class='row file-row'><div class='col-sm-12'><span>First</span><span class='size-alert-span' id='SIZE_ALERT_ID'>Second</span></div></div>";
 
+    var files = $("#fileUpload")[0].files;
+
+    // Store selected files.
+    for (var i = 0; i < files.length; i++) {
+        fileList.push(files[i]);
+    }
+
+    // Individual descriptions for TRR375.
+    if (individualDescriptions) {
+
+        renderResourceFiles();
+
+    } else {
+
+        // Original uploader behavior for other projects.
+        emptyFiles();
+
+        var filesBox = $('#fileNames');
+
+        $('#fileNameMessage').hide();
+
+        for (var i = 0; i < fileList.length; i++) {
+
+            var row = $('<div>', {
+                'class': 'row file-row'
+            });
+
+            var column = $('<div>', {
+                'class': 'col-sm-12'
+            });
+
+            var fileItem = $('<div>', {
+                'class': 'fileItem',
+                id: i
+            }).text(fileList[i].name + '  ');
+
+            fileItem.append(
+                $('<i>', {'class': 'fa fa-close'})
+            );
+
+            var sizeAlert = $('<span>', {
+                'class': 'size-alert-span',
+                id: 'size-alert-id-' + i
+            }).text('File too big!').hide();
+
+            column.append(fileItem);
+            column.append(sizeAlert);
+            row.append(column);
+
+            filesBox.append(row);
         }
-        checkFileSizes();
-        $('#LinkBtn').hide();
-        $('#RemoveBtn').show();
-    });
+    }
+
+    checkFileSizes();
+
+    $('#LinkBtn').hide();
+    $('#RemoveBtn').show();
+
+    // Allow adding more files through the same file input.
+    if (individualDescriptions) {
+        $('#fileUpload').val('');
+    }
+});
 
 
 
@@ -129,27 +250,86 @@ $(document).ready(function () {
     /**
      * delete an already added file 
      */
-    $(document).on('click', '.file-row', function (e) {
-        if ($(e.target).is('i')) {
-            let idx = parseInt($(this).find('.fileItem').eq(0).attr('id'));
-            fileList.splice(idx, 1);
-            $(this).remove();
-            if ($('.file-row').length === 0) {
-                forbiddenLimit = false;
-                $('#file-danger-size').hide();
-                $('#UpBtn').click();
-            }
-            else {
-                checkFileSizes();
-                if (!forbiddenLimit) {
-                    $('#file-danger-size').hide();
-                }
-                $("#fileUpload")[0].value = '';
-                $('#fileUpload').trigger("change");
-            }
-        }
+    // Remove an individual file in individual-description mode.
+$(document).on('click', '.remove-resource', function (e) {
 
-    });
+    e.preventDefault();
+
+    var index = parseInt(
+        $(this).closest('.file-row').attr('data-index'),
+        10
+    );
+
+    fileList.splice(index, 1);
+
+    renderResourceFiles();
+
+    checkFileSizes();
+
+    if (fileList.length === 0) {
+        $('#RemoveBtn').hide();
+        $('#LinkBtn').show();
+    }
+});
+
+
+// Preserve existing removal behavior for other projects.
+$(document).on('click', '.file-row', function (e) {
+
+    if (individualDescriptions) {
+        return;
+    }
+
+    if ($(e.target).is('i')) {
+
+        var index = parseInt(
+            $(this).find('.fileItem').first().attr('id'),
+            10
+        );
+
+        fileList.splice(index, 1);
+
+        // Redraw the remaining files without clearing fileList.
+        $('#fileNames .file-row').remove();
+
+        fileList.forEach(function (file, i) {
+
+            var row = $('<div>', {
+                'class': 'row file-row'
+            });
+
+            var column = $('<div>', {
+                'class': 'col-sm-12'
+            });
+
+            var item = $('<div>', {
+                'class': 'fileItem',
+                id: i
+            }).text(file.name + '  ');
+
+            item.append($('<i>', {'class': 'fa fa-close'}));
+
+            var alertBox = $('<span>', {
+                'class': 'size-alert-span',
+                id: 'size-alert-id-' + i
+            }).text('File too big!').hide();
+
+            column.append(item);
+            column.append(alertBox);
+            row.append(column);
+
+            $('#fileNames').append(row);
+        });
+
+        checkFileSizes();
+
+        if (fileList.length === 0) {
+            $('#fileNameMessage').show();
+            $('#RemoveBtn').hide();
+            $('#LinkBtn').show();
+        }
+    }
+});
 
 
     /**
@@ -175,6 +355,23 @@ $(document).ready(function () {
             // Link upload (not file)
             uploadLink(sBtn);
             return 0;
+        }
+        // Validate every resource description before uploading.
+        if (individualDescriptions) {
+
+            var missingDescription = fileList.some(function (file) {
+                return !file._resourceDescription ||
+                       !file._resourceDescription.trim();
+            });
+
+            if (missingDescription) {
+
+                alert(
+                    'Please enter a description for every resource before uploading.'
+                );
+
+                return;
+            }
         }
         if (fileValidity()) {
             $('#cancel_waiting').hide();
@@ -270,7 +467,22 @@ function uploadFiles(file, action, Max) {
     formdata.set('pck_id', $('#pck_id').val());
     formdata.set('save', action);
     formdata.set('id', $('#id').val());
-    formdata.set('description', $('#field-description').val());
+    // Send individual description or the existing shared description.
+    if (individualDescriptions) {
+
+        formdata.set(
+            'description',
+            file._resourceDescription || ''
+        );
+
+    } else {
+
+        formdata.set(
+            'description',
+            $('#field-description').val() || ''
+        );
+
+    }
     addCsrfToken(formdata);
 
     var oldProgress = 0;
@@ -309,6 +521,13 @@ function uploadFiles(file, action, Max) {
  * Upload a link instead of a file
  */
 function uploadLink(action) {
+    // A URL resource also requires its own description.
+    if (individualDescriptions &&
+        !$('#field-link-description').val().trim()) {
+    
+        alert('Please enter a resource description.');
+        return;
+    }
     var formdata = new FormData();
     formdata.set('url', $('#urlText').val());
     formdata.set('isLink', 1);
@@ -316,7 +535,21 @@ function uploadLink(action) {
     formdata.set('save', action);
     formdata.set('name', $('#urlName').val());
     formdata.set('id', $('#id').val());
-    formdata.set('description', $('#field-description').val());
+    if (individualDescriptions) {
+
+    formdata.set(
+        'description',
+        $('#field-link-description').val()
+    );
+
+    } else {
+
+    formdata.set(
+        'description',
+        $('#field-description').val() || ''
+    );
+
+    }
     addCsrfToken(formdata);
     var req = new XMLHttpRequest();
     req.onreadystatechange = function () {

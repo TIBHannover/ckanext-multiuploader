@@ -5,7 +5,23 @@ class Helper:
 
     def add_resource(package_name, request, active, isLink):
         package = toolkit.get_action("package_show")({}, {"name_or_id": package_name})
-        description = request.form["description"]
+        # Read the description submitted for this resource.
+        description = request.form.get("description", "").strip()
+
+        # Check whether individual descriptions are enabled.
+        individual_descriptions = str(
+            toolkit.config.get(
+                "ckanext.multiuploader.individual_descriptions",
+                "false"
+            )
+        ).lower() in ("true", "1", "yes", "on")
+
+        # Reject resources without descriptions when required.
+        if individual_descriptions and not description:
+            toolkit.abort(
+                400,
+                "Resource description is required."
+            )
         context = {}
         if isLink == 1:  # resource is a link not file
             resource_data = {

@@ -46,4 +46,5 @@ class MultiuploaderPlugin(plugins.SingletonPlugin):
             "cancel_dataset_is_enabled": UploadController.cancel_dataset_plugin_is_enabled,
             "get_max_upload_size": UploadController.get_upload_limit,
             "which_sfb_multiuploader": UploadController.which_sfb_multiuploader,
+            "multiuploader_individual_descriptions":UploadController.individual_descriptions_enabled,
         }
