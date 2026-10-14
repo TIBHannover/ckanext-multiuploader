@@ -119,3 +119,11 @@ class UploadController:
             return "1153"
         else:
             return "1368"
+
+    @staticmethod
+    def individual_descriptions_enabled():
+        value = toolkit.config.get(
+            "ckanext.multiuploader.individual_descriptions",
+            "false"
+        )
+        return str(value).lower() in ("true", "1", "yes", "on")

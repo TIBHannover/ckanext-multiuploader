@@ -11,6 +11,12 @@
 <input type="hidden" value="{{action}}" id="dest_url" >
 <input type="hidden" value="{{cancelUrl}}" id="cancel_upload_url" >
 
+<input
+    type="hidden"
+    id="individual-descriptions-enabled"
+    value="{{ 'true' if h.multiuploader_individual_descriptions() else 'false' }}"
+>
+
 <form id="resource-edit" class="dataset-form dataset-resource-form" method="post" action="" data-module="basic-form resource-form" enctype="multipart/form-data">
   {{ h.csrf_input() if 'csrf_input' in h }}
   {% block stages %}
@@ -39,10 +45,54 @@
         <button  type="button" class="btn btn-primary fakebtn" id="RemoveBtn">{{_('Remove All')}}</button>
         <button  type="button" class="btn btn-primary fakebtn upload-related-parts" id="LinkBtn">{{_('Link')}}</button>
         <div id='urlBox'>
-            {{ form.input('url', id='urlText', label=_('URL'), placeholder=_('http://example.com/my-image.jpg'), value=data.name, error=errors.name, classes=['control-full']) }}
-            <button  type="button" class="btn btn-primary" id="urlRemove">Remove</button>
+
+            {{ form.input(
+                'url',
+                id='urlText',
+                label=_('URL'),
+                placeholder=_('http://example.com/my-image.jpg'),
+                value=data.name,
+                error=errors.name,
+                classes=['control-full']
+            ) }}
+
+            <button type="button"
+                    class="btn btn-primary"
+                    id="urlRemove">
+                Remove
+            </button>
+
             <br><br>
-            {{ form.input('urlName', id='urlName', label=_('Name'), placeholder=_('eg. January 2011 Gold Prices'), value=data.name, error=errors.name, classes=['control-full']) }}
+
+            {{ form.input(
+                'urlName',
+                id='urlName',
+                label=_('Name'),
+                placeholder=_('eg. January 2011 Gold Prices'),
+                value=data.name,
+                error=errors.name,
+                classes=['control-full']
+            ) }}
+
+            {# Mandatory description for individual resource metadata #}
+            {% if h.multiuploader_individual_descriptions() %}
+
+                {{ form.markdown(
+                    'link_description',
+                    id='field-link-description',
+                    label=_('Resource Description'),
+                    placeholder=_('Describe this resource'),
+                    value='',
+                    error=None,
+                    is_required=true
+                ) }}
+
+                <small class="form-text text-muted">
+                    {{ _('Please provide a description for this resource.') }}
+                </small>
+
+            {% endif %}
+
         </div>
         <input type="file" name="urls[]" multiple="multiple" id="fileUpload">
     {% endblock %}
@@ -66,12 +116,29 @@
       </div>
     
               
-    {% endblock %}    
-    {% block basic_fields_description %}
-      {% if h.which_sfb_multiuploader() != "1368" %}
-        {{ form.markdown('description', id='field-description', label=_('Description'), placeholder=_('Some useful notes about the data'), value=data.description, error=errors.description) }}
-      {% endif %}
     {% endblock %}
+
+  {% block basic_fields_description %}
+
+  {% if not h.multiuploader_individual_descriptions() %}
+
+    {# Preserve the original shared description behavior #}
+    {% if h.which_sfb_multiuploader() != "1368" %}
+
+      {{ form.markdown(
+          'description',
+          id='field-description',
+          label=_('Description'),
+          placeholder=_('Some useful notes about the data'),
+          value=data.description,
+          error=errors.description
+      ) }}
+
+    {% endif %}
+
+  {% endif %}
+
+{% endblock %}
 
    
   {% endblock basic_fields %}
