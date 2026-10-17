@@ -6,6 +6,7 @@ from typing import ClassVar
 import pytest
 from ckan.plugins import toolkit
 from ckan.tests import factories
+from werkzeug.routing import Rule
 
 # from pathlib import Path
 # import base64
@@ -63,6 +64,56 @@ class TestUpload:
         response = app.post(self.upload_url, data=self.resource_data, headers=auth)
         assert response.status_code == 200
         assert "/dataset/" in response.body
+
+    @pytest.mark.parametrize(
+        "plugin_name, endpoint, expected_path",
+        [
+            (
+                "resource_custom_metadata",
+                "resource_custom_metadata.index",
+                "/resource_custom_metadata/",
+            ),
+            (
+                "organization_group",
+                "organization_group.add_ownership_view",
+                "/organization_group/add_ownership/",
+            ),
+            (
+                "media_wiki",
+                "media_wiki.machines_view",
+                "/media_wiki/machines/",
+            ),
+        ],
+    )
+    def test_resource_upload_plugin_redirect_branches(
+        self, app, monkeypatch, plugin_name, endpoint, expected_path
+    ):
+        """Verify each conditional redirect branch in upload_resources.
+
+        Third-party plugins are not installed in the test environment, so setting
+        `ckan.plugins` via `@pytest.mark.ckan_config` before `with_plugins` runs
+        would fail during `plugins.load()`. Instead, we set `ckan.plugins` on
+        `toolkit.config` inside the test (which is sufficient for
+        `Helper.check_plugin_enabled`) and register a stub URL rule on
+        `app.flask_app.url_map` so `h.url_for(endpoint, id=...)` resolves.
+        """
+        owner_org = factories.Organization(
+            users=[{"name": self.sysadmin_user["id"], "capacity": "member"}]
+        )
+        dataset = factories.Dataset(owner_org=owner_org["id"])
+        self.resource_data["pck_id"] = dataset["id"]
+        monkeypatch.setitem(
+            toolkit.config, "ckan.plugins", f"multiuploader {plugin_name}"
+        )
+        if not any(
+            rule.endpoint == endpoint for rule in app.flask_app.url_map.iter_rules()
+        ):
+            app.flask_app.url_map.add(Rule(f"{expected_path}<id>", endpoint=endpoint))
+
+        auth = {"Authorization": self.sysadmin_token}
+        response = app.post(self.upload_url, data=self.resource_data, headers=auth)
+        assert response.status_code == 200
+        assert f"{expected_path}{dataset['id']}" in response.body
 
     def test_resource_upload_validation(self, app):
         """A resource upload request must
