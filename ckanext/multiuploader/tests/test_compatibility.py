@@ -42,6 +42,56 @@ def test_plugin_enabled(monkeypatch, configured, name, expected):
 
 
 @pytest.mark.parametrize(
+    "configured, expected",
+    [
+        (None, False),
+        ("multiuploader", False),
+        ("multiuploader cancel_dataset_creation", True),
+        (["multiuploader", "cancel_dataset_creation"], True),
+    ],
+)
+def test_cancel_dataset_plugin_is_enabled(monkeypatch, configured, expected):
+    monkeypatch.setitem(toolkit.config, "ckan.plugins", configured)
+    assert UploadController.cancel_dataset_plugin_is_enabled() is expected
+
+
+@pytest.mark.parametrize(
+    "max_size, expected",
+    [
+        (None, "unknown"),
+        ("", "unknown"),
+        ("5000", "5"),
+        (10000, "10"),
+        ("500", "0.5"),
+        (250, "0.25"),
+    ],
+)
+def test_get_upload_limit(monkeypatch, max_size, expected):
+    if max_size is None:
+        monkeypatch.delitem(toolkit.config, "ckan.max_resource_size", raising=False)
+    else:
+        monkeypatch.setitem(toolkit.config, "ckan.max_resource_size", max_size)
+    assert UploadController.get_upload_limit() == expected
+
+
+@pytest.mark.parametrize(
+    "root_path, expected",
+    [
+        (None, "1368"),
+        ("/default/ckan/{{LANG}}", "1368"),
+        ("/sfb1368/ckan/{{LANG}}", "1368"),
+        ("/sfb1153/ckan/{{LANG}}", "1153"),
+    ],
+)
+def test_which_sfb_multiuploader(monkeypatch, root_path, expected):
+    if root_path is None:
+        monkeypatch.delitem(toolkit.config, "ckan.root_path", raising=False)
+    else:
+        monkeypatch.setitem(toolkit.config, "ckan.root_path", root_path)
+    assert UploadController.which_sfb_multiuploader() == expected
+
+
+@pytest.mark.parametrize(
     "filenames", [None, "", "first.csv,second.csv", ["first,part.csv", "second.csv"]]
 )
 def test_delete_exact_filenames(monkeypatch, filenames):
