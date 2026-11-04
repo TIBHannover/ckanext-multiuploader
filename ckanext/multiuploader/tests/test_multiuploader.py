@@ -127,7 +127,7 @@ class TestUpload:
         assert response.status_code == 200
 
         package = toolkit.get_action("package_show")(
-            {"ignore_auth": True}, {"name_or_id": dataset["id"]}
+            {"ignore_auth": True}, {"id": dataset["id"]}
         )
         assert package["state"] == "active"
         assert len(package["resources"]) == 1
@@ -163,7 +163,7 @@ class TestUpload:
         assert response.status_code == 200
 
         package = toolkit.get_action("package_show")(
-            {"ignore_auth": True}, {"name_or_id": dataset["id"]}
+            {"ignore_auth": True}, {"id": dataset["id"]}
         )
         assert package["state"] == "active"
         assert len(package["resources"]) == 2
@@ -171,3 +171,79 @@ class TestUpload:
         assert names == {"first.csv", "second.txt"}
         for resource in package["resources"]:
             assert resource["url_type"] == "upload"
+
+    @pytest.mark.parametrize(
+        "filename, content",
+        [
+            ("document.txt", b"CKAN 2.11 upload regression\n"),
+            (
+                "archive.zip",
+                b"PK\x05\x06" + b"\x00" * 18,
+            ),
+            (
+                "document.pdf",
+                b"%PDF-1.4\n1 0 obj<</Type/Catalog>>endobj\n%%EOF\n",
+            ),
+        ],
+        ids=["txt", "zip", "pdf"],
+    )
+    def test_authorized_editor_can_upload_ckan_211_file_types(
+        self, app, filename, content
+    ):
+        """CKAN 2.11 accepts uploads when package_show receives an ``id``."""
+        editor = factories.User()
+        editor_token = factories.APIToken(user=editor["id"])["token"]
+        owner_org = factories.Organization(
+            users=[{"name": editor["id"], "capacity": "editor"}]
+        )
+        dataset = factories.Dataset(owner_org=owner_org["id"])
+        self.resource_data.update(
+            {
+                "pck_id": dataset["id"],
+                "save": "go-dataset-complete",
+                "files": (io.BytesIO(content), filename),
+            }
+        )
+
+        response = app.post(
+            self.upload_url,
+            data=self.resource_data,
+            headers={"Authorization": editor_token},
+            content_type="multipart/form-data",
+        )
+
+        assert response.status_code == 200
+        package = toolkit.get_action("package_show")(
+            {"ignore_auth": True}, {"id": dataset["id"]}
+        )
+        assert [resource["name"] for resource in package["resources"]] == [filename]
+        assert package["resources"][0]["url_type"] == "upload"
+
+    def test_authenticated_unauthorized_user_cannot_upload(self, app):
+        owner = factories.User()
+        owner_org = factories.Organization(
+            users=[{"name": owner["id"], "capacity": "editor"}]
+        )
+        dataset = factories.Dataset(owner_org=owner_org["id"])
+        unauthorized_user = factories.User()
+        unauthorized_token = factories.APIToken(user=unauthorized_user["id"])["token"]
+        self.resource_data.update(
+            {
+                "pck_id": dataset["id"],
+                "save": "go-dataset-complete",
+                "files": (io.BytesIO(b"not allowed"), "forbidden.txt"),
+            }
+        )
+
+        with pytest.raises(toolkit.NotAuthorized):
+            app.post(
+                self.upload_url,
+                data=self.resource_data,
+                headers={"Authorization": unauthorized_token},
+                content_type="multipart/form-data",
+            )
+
+        package = toolkit.get_action("package_show")(
+            {"ignore_auth": True}, {"id": dataset["id"]}
+        )
+        assert package["resources"] == []

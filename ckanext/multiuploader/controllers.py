@@ -82,7 +82,7 @@ class UploadController:
             filenames = set(filenames_raw.split(",")) if filenames_raw else set()
         if toolkit.g.user:
             package = toolkit.get_action("package_show")(
-                {}, {"name_or_id": package_name}
+                {}, {"id": package_name}
             )
             for res in package["resources"]:
                 if res["name"] in filenames:

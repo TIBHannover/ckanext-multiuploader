@@ -4,7 +4,7 @@ from ckan.plugins import toolkit
 class Helper:
 
     def add_resource(package_name, request, active, isLink):
-        package = toolkit.get_action("package_show")({}, {"name_or_id": package_name})
+        package = toolkit.get_action("package_show")({}, {"id": package_name})
         # Read the description submitted for this resource.
         description = request.form.get("description", "").strip()
 
@@ -34,7 +34,7 @@ class Helper:
             toolkit.get_action("resource_create")(context, resource_data)
             if active:
                 package = toolkit.get_action("package_show")(
-                    context, {"name_or_id": package_name}
+                    context, {"id": package_name}
                 )
                 package["state"] = "active"
                 toolkit.get_action("package_update")(context, package)
@@ -53,7 +53,7 @@ class Helper:
 
         if active:
             package = toolkit.get_action("package_show")(
-                context, {"name_or_id": package_name}
+                context, {"id": package_name}
             )
             package["state"] = "active"
             toolkit.get_action("package_update")(context, package)

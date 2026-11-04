@@ -69,6 +69,7 @@ def test_delete_exact_filenames(monkeypatch, filenames):
     with Flask(__name__).test_request_context(method="POST", data=data):
         toolkit.g.user = "tester"
         assert UploadController.delete_uploaded_resources() == "True"
+    show.assert_called_once_with({}, {"id": "dataset"})
     expected = ["first.csv", "second.csv"] if filenames else []
     if isinstance(filenames, list):
         expected = filenames
