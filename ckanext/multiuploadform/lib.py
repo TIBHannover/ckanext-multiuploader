@@ -16,11 +16,11 @@ class Helper():
                 'name': request.form['name'],
                 'url_type': '',                
             }
-            resource = toolkit.get_action('resource_create')(context, resource_data)
-            package['resources'].append(resource)
-            if active:
-                package['state'] = 'active'
-            toolkit.get_action('package_update')(context,package)
+            # resource_create already attaches the resource to the package.
+            # Appending it again and calling package_update corrupts the
+            # resource positions on CKAN >= 2.12 (IndexError later on).
+            toolkit.get_action('resource_create')(context, resource_data)
+            Helper._activate(context, package, active)
             return True
 
 
@@ -34,14 +34,17 @@ class Helper():
                 'url_type': 'upload',
                 'upload': resource,
             }
-            resource = toolkit.get_action('resource_create')(context, resource_data)
-            package = toolkit.get_action('package_show')(context, {'id': package_name})
-            package['resources'].append(resource)
-            if active:
-                package['state'] = 'active'
-            toolkit.get_action('package_update')(context,package)
-            
+            toolkit.get_action('resource_create')(context, resource_data)
+
+        Helper._activate(context, package, active)
         return True
+
+    def _activate(context, package, active):
+        """Set the dataset active (once) if requested and still a draft."""
+        if active and package.get('state') != 'active':
+            toolkit.get_action('package_patch')(
+                dict(context), {'id': package['id'], 'state': 'active'}
+            )
     
     def check_plugin_enabled(plugin_name):
         plugins = toolkit.config.get("ckan.plugins")
